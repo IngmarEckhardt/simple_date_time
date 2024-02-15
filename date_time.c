@@ -113,11 +113,11 @@ Time _getTime(time_t timeValue) {
  timeValue += UTC_offset * 3600; // Adjust for UTC offset
 
  // Calculate time components again after adjusting for UTC offset
- uint32_t seconds = timeValue % 60;
+ uint8_t seconds = timeValue % 60;
  timeValue /= 60;
- uint32_t minutes = timeValue % 60;
+ uint8_t minutes = timeValue % 60;
  timeValue /= 60;
- uint32_t hours = timeValue % 24;
+ uint8_t hours = timeValue % 24;
  timeValue /= 24;
  uint32_t days = timeValue;
  // Convert days since epoch to year, month, day
