@@ -1,6 +1,5 @@
 #include "date_time.h"
 
-
 // Define Y2K epoch time
 #define EPOCH_YEAR 2000
 #define SECONDS_PER_DAY 86400
@@ -88,8 +87,6 @@ uint8_t calcMonth(uint32_t *days, uint16_t year)
 }
 
 uint8_t calcUTCOffset(time_t epochTimeY2K) {
-	
-
 	
 		uint32_t days = epochTimeY2K /= SECONDS_PER_DAY;
 

@@ -1,7 +1,6 @@
 #ifndef STIME_H_
 #define STIME_H_
 
-
 #include <avr/io.h>
 
 typedef uint32_t time_t;
@@ -16,10 +15,11 @@ typedef struct {
 	} Time;
 
 #include "date_time.h"
-
+//set SystemTime with a Time-Object in UTC
 time_t mkTime(Time time);
+//get a Time-Object made from system time in CET or CEST
 Time getTime();
-
+//use this to connect the time to a counter interrupt routine or another clock source.
 void tickSecond();
 
 
