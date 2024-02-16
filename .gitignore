@@ -1,7 +1,7 @@
 Debug/
 Release/
-# Andere Artefakte
 simple_date_time.componentinfo.xml
 simple_date_time.cppproj
 /cmake-build-debug/
 /cmake-build-debug-system/
+/src/cmake-build-debug/

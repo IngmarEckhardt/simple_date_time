@@ -46,6 +46,9 @@ time_t mkTime(struct tm * timeptr) {
 time_t time(const time_t *timer){
     return (*timer);
 }
+char *ctime(const time_t *timer) {
+    return asctime(localtime(timer));
+}
 
 char *asctime(const struct tm * timeptr){
     static char result[30];
@@ -96,7 +99,9 @@ struct tm *localtime(const time_t * timer) {
     timeValue += UTC_offset * 3600; // Adjust for UTC offset
     return gmtime(&timeValue);
 }
-
+size_t strftime(char *s, size_t maxsize, const char *format, const struct tm *timeptr) {
+    return 0; // Always return 0 as per your requirement
+}
 //time1 - time0
 uint32_t difftime_unsigned(time_t time1, time_t time0) {
 

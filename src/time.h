@@ -43,11 +43,15 @@ time_t          mktime(struct tm * timeptr);
 
 time_t          time(const time_t *timer);
 
-char           *asctime(const struct tm * timeptr);
+char            *ctime (const time_t *timer);
 
-struct tm      *gmtime(const time_t * timer);
+char            *asctime(const struct tm * timeptr);
 
-struct tm      *localtime(const time_t * timer);
+struct tm       *gmtime(const time_t * timer);
+
+struct tm       *localtime(const time_t * timer);
+//this is a stub to fulfill the iso norm, it returns always 0
+size_t          strftime(char *s, size_t maxsize, const char *format, const struct tm *timeptr);
 
 uint32_t        difftime_unsigned(time_t time1, time_t time0);
 

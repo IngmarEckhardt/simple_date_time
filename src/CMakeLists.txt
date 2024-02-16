@@ -1,26 +1,30 @@
 cmake_minimum_required(VERSION 3.27)
+project(simple-date-time-lib CXX C)
+
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_SYSTEM_NAME Generic)
 SET(CMAKE_SYSTEM_VERSION 1)
+
+#adjust to your cpu
 set(TARGET_CPU ATmega328P)
 
-project(simple-date-time CXX C)
+set(HEADER_FILES
+        time.h
+        mcuClock.h
+        )
 
-add_compile_definitions("__AVR_${TARGET_CPU}__")
+set(SOURCE_FILES
+        time.c
+        mcuClock.c
+        )
 
 add_link_options(-Wl,--print-memory-usage )
 
-# Specify your source files here
-set(SOURCE_FILES
-        src/mcuClock.c
-        src/time.c
-)
+add_library(time_lib STATIC ${SOURCE_FILES} ${HEADER_FILES})
 
-# Define the executable target and link it with source files
-add_executable(simple-date-time ${SOURCE_FILES})
+add_compile_definitions("__AVR_${TARGET_CPU}__")
 
-# Add compiler options
-target_compile_options(simple-date-time PRIVATE
+target_compile_options(time_lib PRIVATE
         -x c
         -funsigned-char
         -funsigned-bitfields
