@@ -1,41 +1,37 @@
-#include "date_time.h"
+#include "mcuClock.h"
 
-// Define Y2K epoch time
-#define EPOCH_YEAR 2000
-#define SECONDS_PER_DAY 86400
+volatile time_t systemTime;
+uint8_t sreg;
 
-// Returns the number of days in a given month of a given year
-uint16_t daysInMonth(uint16_t year, uint8_t month) {
-	static const uint8_t days[] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
-	uint16_t days_in_month = days[month - 1];
-	if (month == 2 && ((year % 4 == 0 && year % 100 != 0) || (year % 400 == 0)))
-	days_in_month++; // Leap year
-	return days_in_month;
+time_t getEpochTime() {
+    time_t ret;
+
+    // Disable interrupts and save the previous state
+    sreg = SREG;
+    cli();
+
+    // Read the value of systemTime
+    ret = systemTime;
+
+    // Restore the previous state (enable interrupts if they were enabled before)
+    SREG = sreg;
+
+    // Return the value
+    return ret;
 }
 
-// Converts the given year, month, day, hour, minute, and second into seconds since the epoch
-time_t _mkTime(Time time, volatile time_t *systemTime) {
-	// Calculate number of days since the epoch
-	uint16_t days_since_epoch = (time.year - EPOCH_YEAR) * 365;
-	for (uint16_t y = EPOCH_YEAR; y < time.year; y++) {
-		if ((y % 4 == 0 && y % 100 != 0) || (y % 400 == 0))
-		days_since_epoch++; // Leap year
-	}
-	for (uint8_t m = 1; m < time.month; m++)
-	days_since_epoch += daysInMonth(time.year, m);
-
-	// Calculate seconds since the epoch
-	time_t seconds_since_epoch = days_since_epoch * SECONDS_PER_DAY;
-	seconds_since_epoch += (time.day - 1) * SECONDS_PER_DAY;
-	seconds_since_epoch += time.hour * 3600;
-	seconds_since_epoch += time.minute * 60;
-	seconds_since_epoch += time.second;
-
-	// Store the calculated value in the global variable __systemTime
-	(*systemTime) = seconds_since_epoch;
-
-	return seconds_since_epoch;
+void tickSecond(){
+    sreg = SREG;
+    cli();
+    systemTime++;
+    SREG = sreg;
 }
+
+
+
+
+
+
 uint8_t isDST(uint16_t year, uint8_t month, uint8_t day) {
 	// DST in Germany starts on the last Sunday of March and ends on the last Sunday of October
 
