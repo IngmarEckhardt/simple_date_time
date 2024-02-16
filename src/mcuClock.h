@@ -1,5 +1,3 @@
-
-
 #ifndef MCUCLOCK_H_
 #define MCUCLOCK_H_
 
@@ -9,9 +7,8 @@
 
 void            set_system_time(time_t timestamp);
 
-void            system_tick(void);
-/**
-time_t _mkTime(Time time,volatile time_t *systemTime);
-Time _getTime(time_t timeValue);**/
+time_t          getSystemTime(void);
+
+void            tickSecond(void);
 
 #endif /* MCUCLOCK_H_ */

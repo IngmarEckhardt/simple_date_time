@@ -6,7 +6,7 @@ extern          "C" {
 #endif
 
 #include <inttypes.h>
-//#include <stdlib.h>
+#include <stdlib.h>
 
 
 typedef uint32_t clock_t;
@@ -21,27 +21,27 @@ typedef uint32_t time_t;
 #define EPOCH_YEAR 2000
 
 struct tm {
-    int8_t          tm_sec;
-    int8_t          tm_min;
-    int8_t          tm_hour;
-    int8_t          tm_mday;
-    int8_t          tm_wday;
-    int8_t          tm_mon;
-    int16_t         tm_year;
-    int16_t         tm_yday;
-    int8_t          tm_isdst;
+    uint8_t          tm_sec;
+    uint8_t          tm_min;
+    uint8_t          tm_hour;
+    uint8_t          tm_mday;
+    uint8_t          tm_wday;
+    uint8_t          tm_mon;
+    uint16_t         tm_year;
+    uint16_t         tm_yday;
+    uint8_t          tm_isdst;
 };
 
 typedef struct tm Time;
 
 clock_t clock(void);
 
-//time1 - time0.
+//time1 - time0, returns int32_t_MIN if calculation exceeds boundaries of int32_t
 int32_t         difftime(time_t time1, time_t time0);
 
 time_t          mktime(struct tm * timeptr);
 
-time_t          time(time_t *timer);
+time_t          time(const time_t *timer);
 
 char           *asctime(const struct tm * timeptr);
 
@@ -49,9 +49,7 @@ struct tm      *gmtime(const time_t * timer);
 
 struct tm      *localtime(const time_t * timer);
 
-uint8_t         is_leap_year(int16_t year);
-
-uint8_t         month_length(int16_t year, uint8_t month);
+uint32_t        difftime_unsigned(time_t time1, time_t time0);
 
 /* @} */
 #ifdef __cplusplus
