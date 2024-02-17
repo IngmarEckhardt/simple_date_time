@@ -5,9 +5,9 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 
-void            set_system_time(time_t timestamp);
+void            set_system_time(uint32_t timestamp);
 
-time_t          getSystemTime(void);
+uint32_t          getSystemTime(void);
 
 void            tickSecond(void);
 

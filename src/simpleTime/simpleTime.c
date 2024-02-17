@@ -48,7 +48,7 @@ uint32_t s_time(const uint32_t *timer){
     return (*timer);
 }
 char *s_ctime(const uint32_t *timer) {
-    return asctime(localtime((const time_t *) timer));
+    return s_asctime(s_localtime((const uint32_t *) timer));
 }
 
 char *s_asctime(const struct tm * timeptr){
@@ -99,7 +99,7 @@ struct tm *s_localtime(const uint32_t * timer) {
 
     // Convert epoch time to local time in Berlin
     timeValue += UTC_offset * 3600; // Adjust for UTC offset
-    return gmtime((const time_t *) &timeValue);
+    return s_gmtime((const uint32_t *) &timeValue);
 }
 
 size_t s_strftime(char *s, size_t maxsize, const char *format, const struct tm *timeptr) {
@@ -155,6 +155,7 @@ uint16_t calcYear(uint32_t *days)
         if ((year % 4 == 0 && year % 100 != 0) || (year % 400 == 0)) {
 
             (*days) -= 366;
+            year++;
         }	 else {
             (*days) -= 365;
             year++;

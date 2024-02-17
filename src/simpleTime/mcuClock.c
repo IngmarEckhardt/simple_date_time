@@ -1,9 +1,9 @@
 #include "mcuClock.h"
 
-volatile time_t systemTime;
+volatile uint32_t systemTime;
 
-time_t getSystemTime() {
-    time_t ret;
+uint32_t getSystemTime() {
+    uint32_t ret;
     uint8_t sreg;
 
     // Disable interrupts and save the previous state
@@ -20,7 +20,7 @@ time_t getSystemTime() {
     return ret;
 }
 
-void setSystemTime(time_t timestamp) {
+void setSystemTime(uint32_t timestamp) {
     uint8_t sreg;
     // Disable interrupts and save the previous state
     sreg = SREG;
