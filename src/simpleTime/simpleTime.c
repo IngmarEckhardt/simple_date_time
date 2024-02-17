@@ -1,17 +1,18 @@
 #include <stdio.h>
-#include "time.h"
+#include "simpleTime.h"
+#include <stdint.h>
 
 uint16_t calcYear(uint32_t *days);
-uint16_t daysInMonth(uint16_t year, uint8_t month);
-uint8_t calcUTCOffset(time_t epochTimeY2K);
+uint8_t daysInMonth(uint16_t year, uint8_t month);
+uint8_t calcUTCOffset(uint32_t epochTimeY2K);
 uint8_t calcMonth(uint32_t *days, uint16_t year);
 
-clock_t clock(void) {
+clock_t s_clock(void) {
     return (clock_t)-1;
 }
 
 //time1 - time0
-int32_t difftime(time_t time1, time_t time0) {
+int32_t s_difftime(uint32_t time1, uint32_t time0) {
     int64_t diff = (int64_t)time1 - (int64_t)time0;
 
 
@@ -22,8 +23,8 @@ int32_t difftime(time_t time1, time_t time0) {
 }
 
 // Converts the given year, month, day, hour, minute, and second into seconds since the epoch
-time_t mkTime(struct tm * timeptr) {
-    const Time time = (*timeptr);
+uint32_t s_mktime(struct tm * timeptr) {
+    const struct tm time = (*timeptr);
     // Calculate number of days since the epoch
     uint16_t days_since_epoch = (time.tm_year - EPOCH_YEAR) * 365;
     for (uint16_t y = EPOCH_YEAR; y < time.tm_year; y++) {
@@ -34,7 +35,7 @@ time_t mkTime(struct tm * timeptr) {
         days_since_epoch += daysInMonth(time.tm_year, m);
 
     // Calculate seconds since the epoch
-    time_t seconds_since_epoch = days_since_epoch * ONE_DAY;
+    uint32_t seconds_since_epoch = days_since_epoch * ONE_DAY;
     seconds_since_epoch += (time.tm_mday - 1) * ONE_DAY;
     seconds_since_epoch += time.tm_hour * ONE_HOUR;
     seconds_since_epoch += time.tm_min * 60;
@@ -43,14 +44,14 @@ time_t mkTime(struct tm * timeptr) {
     return seconds_since_epoch;
 }
 
-time_t time(const time_t *timer){
+uint32_t s_time(const uint32_t *timer){
     return (*timer);
 }
-char *ctime(const time_t *timer) {
-    return asctime(localtime(timer));
+char *s_ctime(const uint32_t *timer) {
+    return asctime(localtime((const time_t *) timer));
 }
 
-char *asctime(const struct tm * timeptr){
+char *s_asctime(const struct tm * timeptr){
     static char result[30];
 
     // Construct the string in the format: "YYYY-MM-DD HH:MM:SS"
@@ -60,8 +61,9 @@ char *asctime(const struct tm * timeptr){
     return result;
 }
 
-struct tm *gmtime(const time_t * timer) {
-    time_t timeValue = (*timer);
+struct tm *s_gmtime(const uint32_t * timer) {
+    uint32_t timeValue = (*timer);
+
     uint8_t seconds = timeValue % 60;
     timeValue /= 60;
     uint8_t minutes = timeValue % 60;
@@ -91,19 +93,21 @@ struct tm *gmtime(const time_t * timer) {
     return constructedTime;
 }
 
-struct tm *localtime(const time_t * timer) {
-    time_t timeValue = (*timer);
+struct tm *s_localtime(const uint32_t * timer) {
+    uint32_t timeValue = (*timer);
     uint8_t UTC_offset = calcUTCOffset((*timer));
 
     // Convert epoch time to local time in Berlin
     timeValue += UTC_offset * 3600; // Adjust for UTC offset
-    return gmtime(&timeValue);
+    return gmtime((const time_t *) &timeValue);
 }
-size_t strftime(char *s, size_t maxsize, const char *format, const struct tm *timeptr) {
+
+size_t s_strftime(char *s, size_t maxsize, const char *format, const struct tm *timeptr) {
     return 0; // Always return 0 as per your requirement
 }
+
 //time1 - time0
-uint32_t difftime_unsigned(time_t time1, time_t time0) {
+uint32_t s_difftime_unsigned(uint32_t time1, uint32_t time0) {
 
     int64_t diff = (int64_t)time1 - (int64_t)time0;
 
@@ -111,9 +115,9 @@ uint32_t difftime_unsigned(time_t time1, time_t time0) {
 }
 
 // Returns the number of days in a given month of a given year
-uint16_t daysInMonth(uint16_t year, uint8_t month) {
+uint8_t daysInMonth(uint16_t year, uint8_t month) {
     static const uint8_t days[] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
-    uint16_t days_in_month = days[month - 1];
+    uint8_t days_in_month = days[month - 1];
     if (month == 2 && ((year % 4 == 0 && year % 100 != 0) || (year % 400 == 0)))
         days_in_month++; // Leap year
     return days_in_month;
@@ -169,7 +173,7 @@ uint8_t calcMonth(uint32_t *days, uint16_t year)
     return month;
 }
 
-uint8_t calcUTCOffset(time_t epochTimeY2K) {
+uint8_t calcUTCOffset(uint32_t epochTimeY2K) {
     uint32_t days = epochTimeY2K /= ONE_DAY;
 
     // Convert days since epoch to year, month, day

@@ -1,30 +1,13 @@
 cmake_minimum_required(VERSION 3.5)
-project(simple-date-time-lib C)
-
-set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_SYSTEM_NAME Generic)
 SET(CMAKE_SYSTEM_VERSION 1)
 
 #adjust to your cpu
 set(TARGET_CPU ATmega328P)
-
-set(HEADER_FILES
-        time.h
-        mcuClock.h
-        )
-
-set(SOURCE_FILES
-        time.c
-        mcuClock.c
-        )
-
-add_link_options(-Wl,--print-memory-usage )
-
-add_library(time_lib STATIC ${SOURCE_FILES} ${HEADER_FILES})
-
 add_compile_definitions("__AVR_${TARGET_CPU}__")
 
-target_compile_options(time_lib PRIVATE
+# adjust -B to your cpu
+set(CUSTOM_COMPILE_OPTIONS
         -x c
         -funsigned-char
         -funsigned-bitfields
@@ -44,4 +27,25 @@ target_compile_options(time_lib PRIVATE
         -MF "$(@:%.o=%.d)"
         -MT "$(@:%.o=%.d)"
         -MT "$(@:%.o=%.o)"
+)
+
+add_compile_options(${CUSTOM_COMPILE_OPTIONS})
+
+project(simple-date-time-lib CXX C)
+
+set(HEADER_FILES
+        time.h
+        simpleTime/mcuClock.h
+        simpleTime/simpleTime.h
+        )
+
+set(SOURCE_FILES
+        simpleTime/mcuClock.c
+        simpleTime/simpleTime.c
+        )
+
+add_library(time_lib STATIC ${SOURCE_FILES} ${HEADER_FILES})
+
+target_include_directories(time_lib PUBLIC
+        ${CMAKE_CURRENT_LIST_DIR}
 )

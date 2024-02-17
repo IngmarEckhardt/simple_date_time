@@ -8,17 +8,10 @@ extern          "C" {
 #include <inttypes.h>
 #include <stdlib.h>
 
-
 typedef uint32_t clock_t;
 typedef uint32_t time_t;
 
 #define CLOCKS_PER_SEC ((clock_t)-1)
-
-#define ONE_HOUR 3600
-
-#define ONE_DAY 86400
-
-#define EPOCH_YEAR 2000
 
 struct tm {
     uint8_t          tm_sec;
@@ -32,28 +25,25 @@ struct tm {
     uint8_t          tm_isdst;
 };
 
-typedef struct tm Time;
+#include "simpleTime/simpleTime.h"
 
-clock_t clock(void);
+clock_t clock(void) {return s_clock();}
 
-//time1 - time0, returns int32_t_MIN if calculation exceeds boundaries of int32_t
-int32_t         difftime(time_t time1, time_t time0);
+int32_t         difftime(time_t time1, time_t time0) {return s_difftime(time1,time0);}
 
-time_t          mktime(struct tm * timeptr);
+time_t          mktime(struct tm * timeptr) {return s_mktime(timeptr);}
 
-time_t          time(const time_t *timer);
+time_t          time(const time_t *timer){return s_time(timer);}
 
-char            *ctime (const time_t *timer);
+char            *ctime (const time_t *timer){return s_ctime(timer);}
 
-char            *asctime(const struct tm * timeptr);
+char            *asctime(const struct tm * timeptr) {return s_asctime(timeptr);}
 
-struct tm       *gmtime(const time_t * timer);
+struct tm       *gmtime(const time_t * timer){return s_gmtime(timer);}
 
-struct tm       *localtime(const time_t * timer);
-//this is a stub to fulfill the iso norm, it returns always 0
-size_t          strftime(char *s, size_t maxsize, const char *format, const struct tm *timeptr);
+struct tm       *localtime(const time_t * timer){return s_localtime(timer);}
 
-uint32_t        difftime_unsigned(time_t time1, time_t time0);
+size_t          strftime(char *s, size_t maxsize, const char *format, const struct tm *timeptr){return s_strftime(s, maxsize, format, timeptr);}
 
 /* @} */
 #ifdef __cplusplus
