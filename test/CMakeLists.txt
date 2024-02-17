@@ -10,11 +10,11 @@ add_subdirectory(${EXTERN_DIR} extern_build)
 
 
 set(SIMPLETIME_HEADER_FILES
-        ${SRC_DIR}/simpleTime/simpleTime.h
+        ${SRC_DIR}/simpleTime/mcu_time.h
 )
 
 set(SIMPLETIME_SOURCE_FILES
-        ${SRC_DIR}/simpleTime/simpleTime.c
+        ${SRC_DIR}/simpleTime/mcu_time.c
 )
 add_library(simple_time_only_lib STATIC ${SIMPLETIME_SOURCE_FILES} ${SIMPLETIME_HEADER_FILES})
 
@@ -23,8 +23,8 @@ target_include_directories(simple_time_only_lib PUBLIC
 )
 
 add_executable(time_c_test
-        simpleTime_test.c
-        simpleTime_test.h
+        mcu_time_test.c
+        mcu_time_test.h
 )
 
 target_link_libraries(time_c_test

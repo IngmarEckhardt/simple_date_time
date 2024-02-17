@@ -34,14 +34,14 @@ add_compile_options(${CUSTOM_COMPILE_OPTIONS})
 
 set(HEADER_FILES
         time.h
-        simpleTime/mcuClock.h
-        simpleTime/simpleTime.h
+        simpleTime/mcu_clock.h
+        simpleTime/mcu_time.h
         )
 
 set(SOURCE_FILES
         time.c
-        simpleTime/mcuClock.c
-        simpleTime/simpleTime.c
+        simpleTime/mcu_clock.c
+        simpleTime/mcu_time.c
         )
 
 add_library(time_lib STATIC ${SOURCE_FILES} ${HEADER_FILES})

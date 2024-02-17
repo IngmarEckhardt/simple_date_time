@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include "simpleTime.h"
+#include "mcu_time.h"
 #include <stdint.h>
 
 uint16_t calcYear(uint32_t *days);
