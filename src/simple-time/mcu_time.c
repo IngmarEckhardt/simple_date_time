@@ -104,33 +104,24 @@ char *s_asctime(const struct tm *timeptr) {
 }
 
 struct tm *s_gmtime(const uint32_t *timer) {
-    uint32_t timeValue = (*timer);
-
-    uint8_t seconds = timeValue % 60;
-    timeValue /= 60;
-    uint8_t minutes = timeValue % 60;
-    timeValue /= 60;
-    uint8_t hours = timeValue % 24;
-    timeValue /= 24;
-    uint32_t days = timeValue;
-    // Convert days since epoch to year, month, day
-    uint16_t year = calcYear(&days);
-    // Find the month and day
-    uint8_t month = calcMonth(&days, year);
-    uint8_t day = days + 1; // Days start from 0, so add 1
-
     // Allocate memory for a struct tm structure
     struct tm *constructedTime = (struct tm *) malloc(sizeof(struct tm));
     if (constructedTime == NULL) {
         return NULL;
     }
+    uint32_t timeValue = (*timer);
 
-    constructedTime->tm_sec = seconds;
-    constructedTime->tm_min = minutes;
-    constructedTime->tm_hour = hours;
-    constructedTime->tm_mday = day;
-    constructedTime->tm_mon = month;
-    constructedTime->tm_year = year;
+    constructedTime->tm_sec = timeValue % 60;
+    timeValue /= 60;
+    constructedTime->tm_min = timeValue % 60;
+    timeValue /= 60;
+    constructedTime->tm_hour = timeValue % 24;
+    timeValue /= 24;
+      // Convert days since epoch to year, month, day
+    constructedTime->tm_year = calcYear(&timeValue);
+    // Find the month and day
+    constructedTime->tm_mon = calcMonth(&timeValue, constructedTime->tm_year);
+    constructedTime->tm_mday = timeValue + 1; // Days start from 0, so add 1
 
     return constructedTime;
 }
@@ -159,10 +150,12 @@ uint32_t s_difftime_unsigned(uint32_t time1, uint32_t time0) {
 
 // Returns the number of days in a given month of a given year
 uint8_t daysInMonth(uint16_t year, uint8_t month) {
+
     static const uint8_t days[] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
     uint8_t days_in_month = days[month - 1];
-    if (month == 2 && isLeapYear(year))
-        days_in_month++;
+
+    if (month == 2 && isLeapYear(year)) {days_in_month++;}
+
     return days_in_month;
 }
 
@@ -199,7 +192,7 @@ uint8_t isDST(uint16_t year, uint8_t month, uint8_t day) {
     // Determine the date of the last Sunday of the month
     uint8_t lastSunday = 31 - ((lastDayOfMonth - 1) % 7);
 
-    if (day >= lastSunday && month == 3 || day < lastSunday && month == 10) {
+    if ((day >= lastSunday && month == 3) || (day < lastSunday && month == 10)) {
         return 1;
     }
     return 0;

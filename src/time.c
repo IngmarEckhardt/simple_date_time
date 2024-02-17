@@ -1,5 +1,5 @@
 #include <time.h>
-#include <simpleTime/mcu_time.h>
+#include <simple-time/mcu_time.h>
 
 clock_t         clock(void) {return s_clock();}
 
