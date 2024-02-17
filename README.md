@@ -1,16 +1,16 @@
-# C Time Library
+# Microcontroller Time Library
 
-This is a simple C library providing time-related functions and structures for handling calendar time and processor time. It is meant for Microcontroller like arduino. 
+This is a simple C library that provides time-related functions and structures for handling calendar time and processor time. It is intended for use with microcontrollers, such as Arduino.
 
 ## Overview
 
-The `time.h` header file in C provides declarations for various functions and structures related to time manipulation. It includes functions for obtaining processor time, converting between different time representations, and formatting time values as strings.
+The `mcu_time.h` header file defines various functions and structures for working with system time. It includes functions for obtaining processor time, converting between different time representations, and formatting time values as strings.
 
-The `mcuClock.h` header file in C provides declarations for functions to manage a volatile uint32_t systemTime with atomic read and write operations and is meant to work together with the time management.
+The `mcu_clock.h` header file in C includes declarations for functions that manage a volatile uint32_t system time with atomic read and write operations. It is designed to work in conjunction with time management.
 
 ## Functions and Structures
 
-In `time.h`
+### `mcu_time.h`
 
 - `clock()`: Returns the processor time used by the program.
 - `difftime()`: Computes the difference between two calendar times.
@@ -22,11 +22,13 @@ In `time.h`
 - `localtime()`: Converts a calendar time value to a CET/CEST `struct tm` object.
 - `strftime()`: is a stub that return zero to fulfill ansi/iso 9899-1990
 
-In `mcuClock.h` every operation is protected with storing interrupt status, disabling all Interrupts, doing the operation and restoring the interrupt status afterward.
+### `mcu_clock.h`
 
-- `set_system_time`: Initialize a systemTime Clock uint32 value
-- `getSystemTime`: read the systemTime
-- `tickSecond`:  increase the systemTime with 1 second. Call this for example in a interrupt-routine that is called from a counter overflow counting a clock quartz.
+In `mcu_clock.h`, every operation is secured by storing the interrupt status, disabling all interrupts, performing the operation, and then restoring the interrupt status afterward.
+
+- `set_system_time`: Initialize a system time Clock uint32 value
+- `get_system_time`: read the system time
+- `tick_second`:  increase the system time by one second. This can be done, for example, in an interrupt routine that is triggered by a counter overflow counting from a quartz clock.
 
 ## Structures
 
@@ -41,4 +43,3 @@ To avoid problems with cross-platform compilation the code is separated into tim
 To use this library in your C program, link the library into your build chain, and include the `time.h` header file. The library will also work in a cpp environment, but keep in mind Atmel warns against using Cpp in the toolchain description..
 
 ```c
-#include "time.h"
