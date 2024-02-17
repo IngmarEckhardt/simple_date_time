@@ -1,18 +1,18 @@
-# Microcontroller Time Library
+# C Time Library
 
-This is a simple C library that provides time-related functions and structures for handling calendar time and processor time. It is intended for use with microcontrollers, such as Arduino.
+This is a simple C library providing time-related functions and structures for handling calendar time and processor time. It is meant for Microcontroller like arduino. 
 
 ## Overview
 
-The `mcu_time.h` header file defines various functions and structures for working with system time. It includes functions for obtaining processor time, converting between different time representations, and formatting time values as strings.
+The `time.h` header file in C provides declarations for various functions and structures related to time manipulation. It includes functions for obtaining processor time, converting between different time representations, and formatting time values as strings. It handles the time as a uint32_t counting the seconds from midnight 1.1.2000 (Year 2k Epoche). This library works for timestamps until the 2068. (Year 2038 Problem + 30 years)
 
-The `mcu_clock.h` header file in C includes declarations for functions that manage a volatile uint32_t system time with atomic read and write operations. It is designed to work in conjunction with time management.
+The `mcuClock.h` header file in C provides declarations for functions to manage a volatile uint32_t systemTime with atomic read and write operations and is meant to work together with the time management.
 
 ## Functions and Structures
 
-### `mcu_time.h`
+In `time.h`
 
-- `clock()`: Returns the processor time used by the program.
+- `clock()`: is a iso fulfilling stub, it should return the processor time used since start of system, if you implement this it need a logic that take sleep times into account
 - `difftime()`: Computes the difference between two calendar times.
 - `mktime()`: Converts a `struct tm` object in UTC to calendar time.
 - `time()`: returns the value read from a pointer.
@@ -22,13 +22,13 @@ The `mcu_clock.h` header file in C includes declarations for functions that mana
 - `localtime()`: Converts a calendar time value to a CET/CEST `struct tm` object.
 - `strftime()`: is a stub that return zero to fulfill ansi/iso 9899-1990
 
-### `mcu_clock.h`
+String representations of time are in the format: yyyy-mm-dd hh:mm:ss and appended (CET) or (CEST) if it's not a UTC time.
 
-In `mcu_clock.h`, every operation is secured by storing the interrupt status, disabling all interrupts, performing the operation, and then restoring the interrupt status afterward.
+In `mcuClock.h` every operation is protected with storing interrupt status, disabling all Interrupts, doing the operation and restoring the interrupt status afterward.
 
-- `set_system_time`: Initialize a system time Clock uint32 value
-- `get_system_time`: read the system time
-- `tick_second`:  increase the system time by one second. This can be done, for example, in an interrupt routine that is triggered by a counter overflow counting from a quartz clock.
+- `set_system_time`: Initialize a systemTime Clock uint32 value
+- `getSystemTime`: read the systemTime
+- `tickSecond`:  increase the systemTime with 1 second. Call this for example in a interrupt-routine that is called from a counter overflow counting a clock quartz.
 
 ## Structures
 
@@ -43,3 +43,19 @@ To avoid problems with cross-platform compilation the code is separated into tim
 To use this library in your C program, link the library into your build chain, and include the `time.h` header file. The library will also work in a cpp environment, but keep in mind Atmel warns against using Cpp in the toolchain description..
 
 ```c
+#include "time.h"
+
+```
+## Compatibility
+
+Time.h/.c works only on C compilers where time_t is not defined, like the avr-gcc, mcuClock.h/.c only on compiler with avr-toolchain. Mcu_time.h/.c and the tests should work on most C compilers that adhere to the C standard.
+
+## Contributing
+
+Contributions to improve or expand this library are welcome! If you find any issues or have suggestions for enhancements, feel free to open an issue or submit a pull request.
+
+## License
+
+This library is licensed under the MIT License. See the LICENSE file for details.
+
+This README.md file provides an overview of the `time.h` header file, including descriptions of its functions, structures, macros, usage instructions, compatibility information, contribution guidelines, and licensing information.
