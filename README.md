@@ -22,6 +22,8 @@ In `time.h`
 - `localtime()`: Converts a calendar time value to a CET/CEST `struct tm` object.
 - `strftime()`: is a stub that return zero to fulfill ansi/iso 9899-1990
 
+String representations of time are in the format: yyyy-mm-dd hh:mm:ss and appended (CET) or (CEST) if it's not a UTC time.
+
 In `mcuClock.h` every operation is protected with storing interrupt status, disabling all Interrupts, doing the operation and restoring the interrupt status afterward.
 
 - `set_system_time`: Initialize a systemTime Clock uint32 value
