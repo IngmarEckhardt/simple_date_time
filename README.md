@@ -6,7 +6,7 @@ This is a simple C library that provides time-related functions and structures f
 
 The `time.h` header file defines various functions and structures for working with system time on microcontrollers. It includes functions to obtain processor time, convert between different time representations, and format time values as strings. It manages time as a uint32_t, counting the seconds from midnight, January 1, 2000 (Year 2000 Epoch). This library functions for timestamps up until the year 2068 (Year 2038 Problem plus 30 years).
 
-The `mcuClock.h` header file provides declarations for functions that manage a volatile `uint32_t` system time using atomic read and write operations. It is designed to be used in conjunction with time management.
+The `mcu_clock.h` header file provides declarations for functions that manage a volatile `uint32_t` system time using atomic read and write operations. It is designed to be used in conjunction with time management.
 
 ## Functions and Structures
 
@@ -24,7 +24,7 @@ In `time.h`
 
 String representations of time are in the format: yyyy-mm-dd hh:mm:ss and appended (CET) or (CEST) if it's not a UTC time.
 
-In `mcuClock.h` every operation is protected with storing interrupt status, disabling all Interrupts, doing the operation and restoring the interrupt status afterward.
+In `mcu_clock.h` every operation is protected with storing interrupt status, disabling all Interrupts, doing the operation and restoring the interrupt status afterward.
 
 - `set_system_time`: Initialize a systemTime Clock uint32 value
 - `getSystemTime`: read the systemTime
@@ -36,7 +36,7 @@ In `mcuClock.h` every operation is protected with storing interrupt status, disa
 
 ## Folder Structure
 
-To avoid problems with cross-platform compilation the code is separated into time.h/.c, which are highly platform-dependent and will cause compile problems in every toolchain where time_t is already declared and SimpleTime.h/.c, which is platform-independent and the unit tests will compile with every toolchain.
+To avoid problems with cross-platform compilation the code is separated into time.h/.c, which are highly platform-dependent and will cause compile problems in every toolchain where time_t is already declared and mcu_time.h/.c, which is platform-independent and the unit tests will compile with every toolchain.
 
 ## Usage
 
@@ -48,7 +48,7 @@ To use this library in your C program, link the library into your build chain, a
 ```
 ## Compatibility
 
-Time.h/.c works only on C compilers where time_t is not defined, like the avr-gcc, mcuClock.h/.c only on compiler with avr-toolchain. Mcu_time.h/.c and the tests should work on most C compilers that adhere to the C standard.
+Time.h/.c works only on C compilers where time_t is not defined, like the avr-gcc, mcu_clock.h/.c only on compiler with avr-toolchain. Mcu_time.h/.c and the tests should work on most C compilers that adhere to the C standard.
 
 ## Contributing
 
