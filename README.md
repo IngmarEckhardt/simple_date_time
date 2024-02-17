@@ -4,9 +4,9 @@ This is a simple C library providing time-related functions and structures for h
 
 ## Overview
 
-The `time.h` header file in C provides declarations for various functions and structures related to time manipulation. It includes functions for obtaining processor time, converting between different time representations, and formatting time values as strings. It handles the time as a uint32_t counting the seconds from midnight 1.1.2000 (Year 2k Epoche). This library works for timestamps until the 2068. (Year 2038 Problem + 30 years)
+The `time.h` header file defines various functions and structures for working with system time on microcontrollers. It includes functions to obtain processor time, convert between different time representations, and format time values as strings. It manages time as a uint32_t, counting the seconds from midnight, January 1, 2000 (Year 2000 Epoch). This library functions for timestamps up until the year 2068 (Year 2038 Problem plus 30 years).
 
-The `mcuClock.h` header file in C provides declarations for functions to manage a volatile uint32_t systemTime with atomic read and write operations and is meant to work together with the time management.
+The `mcuClock.h` header file provides declarations for functions that manage a volatile `uint32_t` system time using atomic read and write operations. It is designed to be used in conjunction with time management.
 
 ## Functions and Structures
 
