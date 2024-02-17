@@ -1,146 +1,189 @@
-#include <unity.h>
-#include <simpleTime.h>
+#include "simpleTime_test.h"
 
-uint16_t calcYear(uint32_t *days);
-
-uint8_t daysInMonth(uint16_t year, uint8_t month);
-
-uint8_t calcUTCOffset(uint32_t epochTimeY2K);
-
-uint8_t calcMonth(uint32_t *days, uint16_t year);
-
-#include "simpleTime.c"
-
-void setUp(void) {
-
-}
-
+void setUp(void) {}
 void tearDown(void) {
+    free(result);
+    free(resultString);
+}
+int main(void) {
+    UNITY_BEGIN();
 
+    //iso functions
+    RUN_TEST(mktime_epochStartDateUTC_returnZero);
+    RUN_TEST(mktime_februaryThirteenthCET_calculateCorrectly);
+    RUN_TEST(mktime_julyThirteenthCEST_calculateCorrectly);
+    RUN_TEST(localtime_februaryThirteenthCET_returnCorrectWintertimeStruct);
+    RUN_TEST(localtime_julyThirteenthCEST_returnCorrectSummertimeStruct);
+    RUN_TEST(asctime_UtcCetCestTimestamps_createThreeStringsWithCorrectTimezones);
+
+    //helper functions
+    RUN_TEST(calcYear_startEpoch2YK366days_shouldBeEpochYearPlusOne);
+    RUN_TEST(daysInMonth_februaryLeapYear_shouldReturn29);
+    RUN_TEST(calcUtcOffset_ForFebruaryAndJuly_shouldReturnBothValuesCorrectly);
+    RUN_TEST(calcMonth_59daysLeapYear_returnFebruary);
+    RUN_TEST(calcMonth_59daysNonLeapYear_returnMarch);
+    RUN_TEST(getUTCOffset_julyThirtieth2021_return2);
+    RUN_TEST(getUTCOffset_octoberTwentySeventh2024_return1);
+    RUN_TEST(getUTCOffset_octoberTwentySixth2024_return2);
+    RUN_TEST(getUTCOffset_marchThirtyFirst2024_return2);
+    RUN_TEST(getUTCOffset_marchThirtieth2024_return1);
+    RUN_TEST(calcZellerCongruence_marchThirtieth2024_returnZeroForSaturday);
+    RUN_TEST(calcZellerCongruence_marchThirtyFirst2024_returnOneForSunday);
+    RUN_TEST(calcZellerCongruence_octoberThirtyFirst2024_return5ForThursday);
+
+    return UNITY_END();
+}
+//iso functions
+
+void mktime_epochStartDateUTC_returnZero(void) {
+
+    uint32_t resultInt32 = s_mktime(&epochStartDate);
+    uint32_t expected_result = 0;
+    TEST_ASSERT_EQUAL_UINT32(expected_result, resultInt32);
+}
+void mktime_februaryThirteenthCET_calculateCorrectly(void) {
+
+    uint32_t resultInt32 = s_mktime(&februaryThirteenth2021);
+    uint32_t expected_result = februaryThirteenth2021Time_T;
+
+    TEST_ASSERT_EQUAL_UINT32(expected_result, resultInt32);
+}
+void mktime_julyThirteenthCEST_calculateCorrectly(void) {
+
+    uint32_t resultInt32 = s_mktime(&julyThirteenth2021);
+    uint32_t expected_result = julyThirtieth2021Time_T;
+
+    TEST_ASSERT_EQUAL_UINT32(expected_result, resultInt32);
 }
 
-void test_mktime(void) {
-    struct tm time_input;
-    time_input.tm_sec = 0;
-    time_input.tm_min = 0;
-    time_input.tm_hour = 0;
-    time_input.tm_mday = 1;
-    time_input.tm_mon = 1;
-    time_input.tm_year = EPOCH_YEAR;
+void asctime_UtcCetCestTimestamps_createThreeStringsWithCorrectTimezones(void) {
+    // Testing with epochStartDate
+    test_asctime_with_timestamp(&epochStartDate, "%04d-%02d-%02d %02d:%02d:%02d", UTC_STRING_SIZE-1);
 
-    // Call the function
-    uint32_t result = s_mktime(&time_input);
+    // Testing with februaryThirteenth2021
+    test_asctime_with_timestamp(&februaryThirteenth2021, "%04d-%02d-%02d %02d:%02d:%02d(CET)", CET_STRING_SIZE-1);
 
-    uint32_t expected_result = 0; // Assuming January 1st of the epoch year corresponds to 0 seconds since the epoch
-
-    TEST_ASSERT_EQUAL_UINT32(expected_result, result);
+    // Testing with julyThirteenth2021
+    test_asctime_with_timestamp(&julyThirteenth2021, "%04d-%02d-%02d %02d:%02d:%02d(CEST)", CEST_STRING_SIZE-1);
 }
 
-void test_calcYear(void) {
-    uint32_t days = 366; // Year 2000 was a Leap Year
-    uint16_t result = calcYear(&days);
-    TEST_ASSERT_EQUAL_UINT16(EPOCH_YEAR + 1, result);
-}
+void localtime_februaryThirteenthCET_returnCorrectWintertimeStruct(void) {
 
-void test_daysInMonth(void) {
-    uint8_t result = daysInMonth(2024, 2); // February 2024
-    TEST_ASSERT_EQUAL_UINT8(29, result); // Leap year
-}
-
-void test_calcUTCOffset(void) {
-    uint32_t epochTime = 666489600; // February 13, 2021 (not in DST)
-    uint8_t result = calcUTCOffset(epochTime);
-    TEST_ASSERT_EQUAL_UINT8(1, result); // Not in DST, UTC+1 (CET)
-
-    epochTime = 1627615200; // July 30, 2021 (in DST)
-    result = calcUTCOffset(epochTime);
-    TEST_ASSERT_EQUAL_UINT8(2, result); // In DST, UTC+2 (CEST)
-}
-
-void test_calcMonth(void) {
-    uint32_t days = 59;
-    uint8_t result = calcMonth(&days, 2024);
-    TEST_ASSERT_EQUAL_UINT8(2, result);
-}
-
-void test_calcMonth_non_leap(void) {
-    uint32_t days = 59;
-    uint8_t result = calcMonth(&days, 2023);
-    TEST_ASSERT_EQUAL_UINT8(3, result);
-}
-
-void test_mktime_should_calculate_correct_Value(void) {
-    struct tm time_input;
-    time_input.tm_sec = 0;
-    time_input.tm_min = 0;
-    time_input.tm_hour = 0;
-    time_input.tm_mday = 13;
-    time_input.tm_mon = 2;
-    time_input.tm_year = 2021;
-
-    // Call the function
-    uint32_t result = s_mktime(&time_input);
-
-    uint32_t expected_result = 666489600;
-
-    TEST_ASSERT_EQUAL_UINT32(expected_result, result);
-}
-
-void test_s_localtime(void) {
-    uint32_t epochTime = 666489600; // February 13, 2021, 00:00:00 (UTC)
-
-    struct tm *result = s_localtime(&epochTime);
+    result = s_localtime(&februaryThirteenth2021Time_T);
 
     TEST_ASSERT_NOT_NULL(result);
-    //one hour later for CET
     TEST_ASSERT_EQUAL_INT(0, result->tm_sec);
     TEST_ASSERT_EQUAL_INT(0, result->tm_min);
     TEST_ASSERT_EQUAL_INT(1, result->tm_hour);
     TEST_ASSERT_EQUAL_INT(13, result->tm_mday);
     TEST_ASSERT_EQUAL_INT(2, result->tm_mon);
     TEST_ASSERT_EQUAL_INT(2021, result->tm_year);
-
-    // Free the memory allocated by s_localtime
-    free(result);
 }
-void test_s_asctime(void) {
-    struct tm time_input;
-    time_input.tm_sec = 0;
-    time_input.tm_min = 0;
-    time_input.tm_hour = 0;
-    time_input.tm_mday = 1;
-    time_input.tm_mon = 1;
-    time_input.tm_year = EPOCH_YEAR;
+void localtime_julyThirteenthCEST_returnCorrectSummertimeStruct(void) {
 
-    // Call s_asctime with the given struct tm
-    char *result = s_asctime(&time_input);
-
-    // Check if the result is not NULL
+    result = s_localtime(&julyThirtieth2021Time_T);
+    //add two hours because of CEST
     TEST_ASSERT_NOT_NULL(result);
-
-    // Manually construct the expected result
-    char expected_result[25];
-    sprintf(expected_result, "%04d-%02d-%02d %02d:%02d:%02d(CET) ",
-            time_input.tm_year, time_input.tm_mon, time_input.tm_mday,
-            time_input.tm_hour, time_input.tm_min, time_input.tm_sec);
-
-    // Check if the result matches the expected result
-    TEST_ASSERT_EQUAL_STRING(expected_result, result);
-    printf("Asctime Result: %s\n", result);
-    // Free the memory allocated by s_asctime
-    free(result);
+    TEST_ASSERT_EQUAL_INT(0, result->tm_sec);
+    TEST_ASSERT_EQUAL_INT(0, result->tm_min);
+    TEST_ASSERT_EQUAL_INT(2, result->tm_hour);
+    TEST_ASSERT_EQUAL_INT(13, result->tm_mday);
+    TEST_ASSERT_EQUAL_INT(7, result->tm_mon);
+    TEST_ASSERT_EQUAL_INT(2021, result->tm_year);
 }
-int main(void) {
-    UNITY_BEGIN();
 
-    RUN_TEST(test_mktime);
-    RUN_TEST(test_mktime_should_calculate_correct_Value);
-    RUN_TEST(test_calcYear);
-    RUN_TEST(test_daysInMonth);
-    RUN_TEST(test_calcUTCOffset);
-    RUN_TEST(test_calcMonth);
-    RUN_TEST(test_calcMonth_non_leap);
-    RUN_TEST(test_s_localtime);
-    RUN_TEST(test_s_asctime);
-    return UNITY_END();
+
+//helper functions
+
+void calcYear_startEpoch2YK366days_shouldBeEpochYearPlusOne(void) {
+    uint32_t days = 366; // Year 2000 was a Leap Year
+    uint16_t resultYear = calcYear(&days);
+    TEST_ASSERT_EQUAL_UINT16(EPOCH_YEAR + 1, resultYear);
+}
+
+void daysInMonth_februaryLeapYear_shouldReturn29(void) {
+    uint8_t resultMonth = daysInMonth(2024, 2);
+    TEST_ASSERT_EQUAL_UINT8(29, resultMonth); // Leap year
+}
+
+void calcUtcOffset_ForFebruaryAndJuly_shouldReturnBothValuesCorrectly(void) {
+    uint8_t resultOffset = calcUTCOffset(februaryThirteenth2021Time_T);
+    TEST_ASSERT_EQUAL_UINT8(1, resultOffset);
+
+    uint8_t resultOffset2 = calcUTCOffset(julyThirtieth2021Time_T);
+    TEST_ASSERT_EQUAL_UINT8(2, resultOffset2);
+}
+
+void getUTCOffset_julyThirtieth2021_return2(void) {
+
+    uint8_t resultOffset2 = getUTCOffset(2021, 7,13);
+    TEST_ASSERT_EQUAL_UINT8(2, resultOffset2);
+}
+
+void getUTCOffset_octoberTwentySeventh2024_return1(void) {
+
+    uint8_t resultOffset2 = getUTCOffset(2024, 10,27);
+    TEST_ASSERT_EQUAL_UINT8(1, resultOffset2);
+}
+
+void getUTCOffset_octoberTwentySixth2024_return2(void) {
+
+    uint8_t resultOffset2 = getUTCOffset(2024, 10,26);
+    TEST_ASSERT_EQUAL_UINT8(2, resultOffset2);
+}
+void getUTCOffset_marchThirtyFirst2024_return2(void) {
+
+    uint8_t resultOffset2 = getUTCOffset(2024, 3,31);
+    TEST_ASSERT_EQUAL_UINT8(2, resultOffset2);
+}
+void getUTCOffset_marchThirtieth2024_return1(void) {
+
+    uint8_t resultOffset2 = getUTCOffset(2024, 3,30);
+    TEST_ASSERT_EQUAL_UINT8(1, resultOffset2);
+}
+void calcZellerCongruence_marchThirtieth2024_returnZeroForSaturday(void) {
+
+    uint8_t resultOffset2 = calcZellerCongruence(2024, 3,30);
+    TEST_ASSERT_EQUAL_UINT8(0, resultOffset2);
+}
+void calcZellerCongruence_marchThirtyFirst2024_returnOneForSunday(void) {
+
+    uint8_t resultOffset2 = calcZellerCongruence(2024, 3,31);
+    TEST_ASSERT_EQUAL_UINT8(1, resultOffset2);
+}
+
+void calcZellerCongruence_octoberThirtyFirst2024_return5ForThursday(void) {
+
+    uint8_t resultOffset2 = calcZellerCongruence(2024, 10,31);
+    TEST_ASSERT_EQUAL_UINT8(5, resultOffset2);
+}
+
+void calcMonth_59daysLeapYear_returnFebruary(void) {
+    uint32_t days = 59;
+    uint8_t resultMonth = calcMonth(&days, 2024);
+    TEST_ASSERT_EQUAL_UINT8(2, resultMonth);
+}
+
+void calcMonth_59daysNonLeapYear_returnMarch(void) {
+    uint32_t days = 59;
+    uint8_t resultMonth = calcMonth(&days, 2023);
+    TEST_ASSERT_EQUAL_UINT8(3, resultMonth);
+}
+
+// Helper function to test asctime with a given timestamp
+void test_asctime_with_timestamp(const struct tm *timestamp, const char *expected_format, size_t expected_length) {
+    resultString = s_asctime(timestamp);
+    TEST_ASSERT_NOT_NULL(resultString);
+
+    char expected_result[expected_length];
+    sprintf(expected_result, expected_format,
+            timestamp->tm_year, timestamp->tm_mon, timestamp->tm_mday,
+            timestamp->tm_hour, timestamp->tm_min, timestamp->tm_sec);
+
+    TEST_ASSERT_EQUAL_STRING(expected_result, resultString);
+    size_t result_length = 0;
+    while (resultString[result_length] != '\0') {
+        result_length++;
+    }
+    TEST_ASSERT_EQUAL_UINT32(expected_length, result_length);
 }

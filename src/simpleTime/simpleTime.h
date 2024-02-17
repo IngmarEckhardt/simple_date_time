@@ -8,6 +8,9 @@
 #define ONE_HOUR 3600
 #define ONE_DAY 86400
 #define EPOCH_YEAR 2000
+#define UTC_STRING_SIZE 20
+#define CET_STRING_SIZE 25
+#define CEST_STRING_SIZE 26
 
 clock_t         s_clock(void);
 //time1 - time0, returns int32_t_MIN if calculation exceeds boundaries of int32_t

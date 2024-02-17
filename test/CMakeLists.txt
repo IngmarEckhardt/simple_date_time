@@ -24,6 +24,7 @@ target_include_directories(simple_time_only_lib PUBLIC
 
 add_executable(time_c_test
         simpleTime_test.c
+        simpleTime_test.h
 )
 
 target_link_libraries(time_c_test

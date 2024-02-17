@@ -3,27 +3,33 @@
 #include <stdint.h>
 
 uint16_t calcYear(uint32_t *days);
+
 uint8_t daysInMonth(uint16_t year, uint8_t month);
+
 uint8_t calcUTCOffset(uint32_t epochTimeY2K);
+
 uint8_t calcMonth(uint32_t *days, uint16_t year);
-uint8_t isDST(uint8_t month, uint8_t day);
+
+uint8_t isDST(uint16_t year, uint8_t month, uint8_t day);
+
+uint8_t calcZellerCongruence(uint16_t year, uint8_t month, uint8_t day);
 
 //expecting no mcu library use this function, because it is per default unknown in a mcu environment without rtc
 //calculate this value with systemTime and CLOCKS_PER_SECOND or F_CPU in mcuClock if necessary to keep this implementation
 //as close as possible to the ansi/iso 9899-1990
 clock_t s_clock(void) {
-    return (clock_t)-1;
+    return (clock_t) -1;
 }
 
 //time1 - time0
 int32_t s_difftime(uint32_t time1, uint32_t time0) {
-    int64_t diff = (int64_t)time1 - (int64_t)time0;
+    int64_t diff = (int64_t) time1 - (int64_t) time0;
 
 
     if (diff > INT32_MAX || diff < INT32_MIN) {
         return INT32_MIN;
     }
-    return (int32_t)diff;
+    return (int32_t) diff;
 }
 
 // Converts the given year, month, day, hour, minute, and second into seconds since the epoch
@@ -48,28 +54,50 @@ uint32_t s_mktime(const struct tm *timeptr) {
     return seconds_since_epoch;
 }
 
-uint32_t s_time(const uint32_t *timer){
+uint32_t s_time(const uint32_t *timer) {
     return (*timer);
 }
+
 char *s_ctime(const uint32_t *timer) {
-    return s_asctime(s_localtime((const uint32_t *) timer));
+    return s_asctime(s_localtime(timer));
 }
 
-char *s_asctime(const struct tm *timeptr){
-    char *result = (char *)malloc(25 * sizeof(char)); // Allocate memory for the result
-    if (result == NULL) {
-        return NULL;
+char *s_asctime(const struct tm *timeptr) {
+    char *result; // Allocate memory for the result
+
+    switch (timeptr->tm_isdst) {
+        case 1: {
+            result = (char *) malloc(CET_STRING_SIZE * sizeof(char));
+            if (result == NULL) {
+                return NULL;
+            }
+            sprintf(result, "%04d-%02d-%02d %02d:%02d:%02d(CET)",
+                    timeptr->tm_year, timeptr->tm_mon, timeptr->tm_mday,
+                    timeptr->tm_hour, timeptr->tm_min, timeptr->tm_sec);
+            break;
+        }
+        case 2: {
+            result = (char *) malloc(CEST_STRING_SIZE * sizeof(char));
+            if (result == NULL) {
+                return NULL;
+            }
+            sprintf(result, "%04d-%02d-%02d %02d:%02d:%02d(CEST)",
+                    timeptr->tm_year, timeptr->tm_mon, timeptr->tm_mday,
+                    timeptr->tm_hour, timeptr->tm_min, timeptr->tm_sec);
+            break;
+        }
+        default: {
+            result = (char *) malloc(UTC_STRING_SIZE * sizeof(char));
+            if (result == NULL) {
+                return NULL;
+            }
+            sprintf(result, "%04d-%02d-%02d %02d:%02d:%02d",
+                    timeptr->tm_year, timeptr->tm_mon, timeptr->tm_mday,
+                    timeptr->tm_hour, timeptr->tm_min, timeptr->tm_sec);
+            break;
+        }
     }
-    // Construct the string in the format: "YYYY-MM-DD HH:MM:SS"
-    if (isDST(timeptr->tm_mon, timeptr->tm_mday)) {
-        sprintf(result, "%04d-%02d-%02d %02d:%02d:%02d(CEST)",
-                timeptr->tm_year, timeptr->tm_mon, timeptr->tm_mday,
-                timeptr->tm_hour, timeptr->tm_min, timeptr->tm_sec);
-    } else {
-        sprintf(result, "%04d-%02d-%02d %02d:%02d:%02d(CET) ",
-                timeptr->tm_year, timeptr->tm_mon, timeptr->tm_mday,
-                timeptr->tm_hour, timeptr->tm_min, timeptr->tm_sec);
-    }
+
     return result;
 }
 
@@ -90,7 +118,7 @@ struct tm *s_gmtime(const uint32_t *timer) {
     uint8_t day = days + 1; // Days start from 0, so add 1
 
     // Allocate memory for a struct tm structure
-    struct tm *constructedTime = (struct tm *)malloc(sizeof(struct tm));
+    struct tm *constructedTime = (struct tm *) malloc(sizeof(struct tm));
     if (constructedTime == NULL) {
         return NULL;
     }
@@ -105,13 +133,15 @@ struct tm *s_gmtime(const uint32_t *timer) {
     return constructedTime;
 }
 
-struct tm *s_localtime(const uint32_t * timer) {
+struct tm *s_localtime(const uint32_t *timer) {
     uint32_t timeValue = (*timer);
     uint8_t UTC_offset = calcUTCOffset((*timer));
 
     // Convert epoch time to local time in Berlin
-    timeValue += UTC_offset * 3600; // Adjust for UTC offset
-    return s_gmtime((const uint32_t *) &timeValue);
+    timeValue += UTC_offset * ONE_HOUR; // Adjust for UTC offset
+    struct tm *timeToReturn = s_gmtime(&timeValue);
+    timeToReturn->tm_isdst = UTC_offset;
+    return timeToReturn;
 }
 
 size_t s_strftime(char *s, size_t maxsize, const char *format, const struct tm *timeptr) {
@@ -121,9 +151,9 @@ size_t s_strftime(char *s, size_t maxsize, const char *format, const struct tm *
 //time1 - time0
 uint32_t s_difftime_unsigned(uint32_t time1, uint32_t time0) {
 
-    int64_t diff = (int64_t)time1 - (int64_t)time0;
+    int64_t diff = (int64_t) time1 - (int64_t) time0;
 
-    return (uint32_t)(diff >= 0 ? diff : -diff);
+    return (uint32_t) (diff >= 0 ? diff : -diff);
 }
 
 // Returns the number of days in a given month of a given year
@@ -135,40 +165,60 @@ uint8_t daysInMonth(uint16_t year, uint8_t month) {
     return days_in_month;
 }
 
-uint8_t isDST(uint8_t month, uint8_t day) {
+uint8_t calcZellerCongruence(uint16_t year, uint8_t month, uint8_t day) {
+    uint32_t h;
+    if(month == 1)
+    {
+        month = 13;
+        year--;
+    }
+    if (month == 2)
+    {
+        month = 14;
+        year--;
+    }
+    h = day + 13*(month+1)/5 + (year % 100) + (year % 100)/4 + (year / 100)/4 + 5*(year / 100);
+    h = h % 7;
+    return h;
+}
+
+uint8_t isDST(uint16_t year, uint8_t month, uint8_t day) {
     // DST in Germany starts on the last Sunday of March and ends on the last Sunday of October
+
+    if (month > 3 && month < 10) {
+        return 1;
+    }
 
     // Check if month is March through October
     if (month < 3 || month > 10)
         return 0;
 
     // Calculate the day of the week for the last day of the month
-    uint8_t lastDayOfWeek = (5 + (31 * (month - 1) - 7) % 7) % 7; // Zeller's Congruence
+    uint8_t lastDayOfMonth = calcZellerCongruence(year, month, 31);
 
     // Determine the date of the last Sunday of the month
-    uint8_t lastSunday = 31 - lastDayOfWeek;
+    uint8_t lastSunday = 31 - ((lastDayOfMonth-1)%7);
 
-    // Check if the day is within the last week of the month
-    if (day > lastSunday)
-        return 1; // Last week of the month, DST in effect
 
+    if (day >= lastSunday && month == 3 || day < lastSunday && month == 10) {
+        return 1;
+    }
     return 0;
 }
 
 // Function to get the UTC offset based on whether daylight saving time (DST) is in effect
-uint8_t getUTCOffset(uint8_t month, uint8_t day) {
-    return isDST(month, day) ? 2 : 1; // DST in effect, UTC+2 (CEST)  Standard time, UTC+1 (CET)
+uint8_t getUTCOffset(uint16_t year, uint8_t month, uint8_t day) {
+    return isDST(year, month, day) ? 2 : 1; // DST in effect, UTC+2 (CEST)  Standard time, UTC+1 (CET)
 }
 
-uint16_t calcYear(uint32_t *days)
-{
+uint16_t calcYear(uint32_t *days) {
     uint16_t year = EPOCH_YEAR;
     while ((*days) >= 365 + ((year % 4 == 0 && year % 100 != 0) || (year % 400 == 0))) {
         if ((year % 4 == 0 && year % 100 != 0) || (year % 400 == 0)) {
 
             (*days) -= 366;
             year++;
-        }	 else {
+        } else {
             (*days) -= 365;
             year++;
         }
@@ -176,8 +226,7 @@ uint16_t calcYear(uint32_t *days)
     return year;
 }
 
-uint8_t calcMonth(uint32_t *days, uint16_t year)
-{
+uint8_t calcMonth(uint32_t *days, uint16_t year) {
     uint8_t month = 1;
     while ((*days) >= daysInMonth(year, month)) {
         (*days) -= daysInMonth(year, month);
@@ -196,5 +245,5 @@ uint8_t calcUTCOffset(uint32_t epochTimeY2K) {
     uint8_t day = days + 1; // Days start from 0, so add 1
 
     // Get the UTC offset based on whether daylight saving time (DST) is in effect
-    return getUTCOffset(month, day);
+    return getUTCOffset(year, month, day);
 }

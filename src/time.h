@@ -28,6 +28,7 @@ struct tm {
     uint8_t          tm_mon;
     uint16_t         tm_year;
     uint16_t         tm_yday;
+    //0 UTC, 1 CET, 2 CEST
     uint8_t          tm_isdst;
 };
 
@@ -36,8 +37,8 @@ clock_t         clock(void);
 int32_t         difftime(time_t time1, time_t time0);
 time_t          mktime(struct tm * timeptr);
 time_t          time(const time_t *timer);
-char            *ctime (const time_t *timer);
 char            *asctime(const struct tm * timeptr);
+char            *ctime (const time_t *timer);
 struct tm       *gmtime(const time_t * timer);
 struct tm       *localtime(const time_t * timer);
 //function is a stub in this implementation, returned size_t is always zero
