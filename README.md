@@ -44,3 +44,18 @@ To use this library in your C program, link the library into your build chain, a
 
 ```c
 #include "time.h"
+
+```
+## Compatibility
+
+Time.h/.c works only on C compilers where time_t is not defined, like the avr-gcc, mcuClock.h/.c only on compiler with avr-toolchain. Mcu_time.h/.c and the tests should work on most C compilers that adhere to the C standard.
+
+## Contributing
+
+Contributions to improve or expand this library are welcome! If you find any issues or have suggestions for enhancements, feel free to open an issue or submit a pull request.
+
+## License
+
+This library is licensed under the MIT License. See the LICENSE file for details.
+
+This README.md file provides an overview of the `time.h` header file, including descriptions of its functions, structures, macros, usage instructions, compatibility information, contribution guidelines, and licensing information.
