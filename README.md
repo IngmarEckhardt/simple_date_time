@@ -17,7 +17,7 @@ In `time.h`
 - `mktime()`: Converts a `struct tm` object in UTC to calendar time.
 - `time()`: returns the value read from a pointer.
 - `asctime()`: Converts every `struct tm` object to a string representation.
-- `ctime()`: Converts a calendar time a string representation in CET/CEST.
+- `ctime()`: Converts a calendar time to a string representation in CET/CEST.
 - `gmtime()`: Converts a calendar time value to a UTC-based `struct tm` object.
 - `localtime()`: Converts a calendar time value to a CET/CEST `struct tm` object.
 - `strftime()`: is a stub that return zero to fulfill ansi/iso 9899-1990
