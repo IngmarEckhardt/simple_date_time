@@ -1,6 +1,6 @@
-# C Time Library
+# Simple Time Library for Microprocessors
 
-This is a simple C library providing time-related functions and structures for handling calendar time and processor time. It is meant for Microcontroller like arduino. 
+This is a simple C library that provides time-related functions and structures for handling calendar time and processor time. It is designed for microcontrollers, such as Arduino.
 
 ## Overview
 
