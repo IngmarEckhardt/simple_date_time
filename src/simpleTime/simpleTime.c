@@ -6,7 +6,11 @@ uint16_t calcYear(uint32_t *days);
 uint8_t daysInMonth(uint16_t year, uint8_t month);
 uint8_t calcUTCOffset(uint32_t epochTimeY2K);
 uint8_t calcMonth(uint32_t *days, uint16_t year);
+uint8_t isDST(uint8_t month, uint8_t day);
 
+//expecting no mcu library use this function, because it is per default unknown in a mcu environment without rtc
+//calculate this value with systemTime and CLOCKS_PER_SECOND or F_CPU in mcuClock if necessary to keep this implementation
+//as close as possible to the ansi/iso 9899-1990
 clock_t s_clock(void) {
     return (clock_t)-1;
 }
@@ -23,7 +27,7 @@ int32_t s_difftime(uint32_t time1, uint32_t time0) {
 }
 
 // Converts the given year, month, day, hour, minute, and second into seconds since the epoch
-uint32_t s_mktime(struct tm * timeptr) {
+uint32_t s_mktime(const struct tm *timeptr) {
     const struct tm time = (*timeptr);
     // Calculate number of days since the epoch
     uint16_t days_since_epoch = (time.tm_year - EPOCH_YEAR) * 365;
@@ -51,17 +55,25 @@ char *s_ctime(const uint32_t *timer) {
     return s_asctime(s_localtime((const uint32_t *) timer));
 }
 
-char *s_asctime(const struct tm * timeptr){
-    static char result[30];
-
+char *s_asctime(const struct tm *timeptr){
+    char *result = (char *)malloc(25 * sizeof(char)); // Allocate memory for the result
+    if (result == NULL) {
+        return NULL;
+    }
     // Construct the string in the format: "YYYY-MM-DD HH:MM:SS"
-    sprintf(result, "%04d-%02d-%02d %02d:%02d:%02d",
-            timeptr->tm_year, timeptr->tm_mon, timeptr->tm_mday,
-            timeptr->tm_hour, timeptr->tm_min, timeptr->tm_sec);
+    if (isDST(timeptr->tm_mon, timeptr->tm_mday)) {
+        sprintf(result, "%04d-%02d-%02d %02d:%02d:%02d(CEST)",
+                timeptr->tm_year, timeptr->tm_mon, timeptr->tm_mday,
+                timeptr->tm_hour, timeptr->tm_min, timeptr->tm_sec);
+    } else {
+        sprintf(result, "%04d-%02d-%02d %02d:%02d:%02d(CET) ",
+                timeptr->tm_year, timeptr->tm_mon, timeptr->tm_mday,
+                timeptr->tm_hour, timeptr->tm_min, timeptr->tm_sec);
+    }
     return result;
 }
 
-struct tm *s_gmtime(const uint32_t * timer) {
+struct tm *s_gmtime(const uint32_t *timer) {
     uint32_t timeValue = (*timer);
 
     uint8_t seconds = timeValue % 60;

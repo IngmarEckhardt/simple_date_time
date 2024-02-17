@@ -103,7 +103,33 @@ void test_s_localtime(void) {
     // Free the memory allocated by s_localtime
     free(result);
 }
+void test_s_asctime(void) {
+    struct tm time_input;
+    time_input.tm_sec = 0;
+    time_input.tm_min = 0;
+    time_input.tm_hour = 0;
+    time_input.tm_mday = 1;
+    time_input.tm_mon = 1;
+    time_input.tm_year = EPOCH_YEAR;
 
+    // Call s_asctime with the given struct tm
+    char *result = s_asctime(&time_input);
+
+    // Check if the result is not NULL
+    TEST_ASSERT_NOT_NULL(result);
+
+    // Manually construct the expected result
+    char expected_result[25];
+    sprintf(expected_result, "%04d-%02d-%02d %02d:%02d:%02d(CET) ",
+            time_input.tm_year, time_input.tm_mon, time_input.tm_mday,
+            time_input.tm_hour, time_input.tm_min, time_input.tm_sec);
+
+    // Check if the result matches the expected result
+    TEST_ASSERT_EQUAL_STRING(expected_result, result);
+    printf("Asctime Result: %s\n", result);
+    // Free the memory allocated by s_asctime
+    free(result);
+}
 int main(void) {
     UNITY_BEGIN();
 
@@ -115,5 +141,6 @@ int main(void) {
     RUN_TEST(test_calcMonth);
     RUN_TEST(test_calcMonth_non_leap);
     RUN_TEST(test_s_localtime);
+    RUN_TEST(test_s_asctime);
     return UNITY_END();
 }

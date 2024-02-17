@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.5)
 set(CMAKE_SYSTEM_NAME Generic)
 SET(CMAKE_SYSTEM_VERSION 1)
 project("Simple Time Library" C)
+
 #adjust to your cpu
 set(TARGET_CPU ATmega328P)
 add_compile_definitions("__AVR_${TARGET_CPU}__")
@@ -30,8 +31,6 @@ set(CUSTOM_COMPILE_OPTIONS
 )
 
 add_compile_options(${CUSTOM_COMPILE_OPTIONS})
-
-project(simple-date-time-lib CXX C)
 
 set(HEADER_FILES
         time.h
