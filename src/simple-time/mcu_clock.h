@@ -1,5 +1,5 @@
-#ifndef MCUCLOCK_H_
-#define MCUCLOCK_H_
+#ifndef MCU_CLOCK_H_
+#define MCU_CLOCK_H_
 
 #include "time.h"
 #include <avr/io.h>

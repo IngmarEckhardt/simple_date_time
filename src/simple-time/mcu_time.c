@@ -2,36 +2,29 @@
 #include "mcu_time.h"
 #include <stdint.h>
 
+//helper functions
 uint16_t calcYear(uint32_t *days);
-
 uint8_t daysInMonth(uint16_t year, uint8_t month);
-
 uint8_t calcUTCOffset(uint32_t epochTimeY2K);
-
 uint8_t calcMonth(uint32_t *days, uint16_t year);
-
 uint8_t isDST(uint16_t year, uint8_t month, uint8_t day);
-
 uint8_t calcZellerCongruence(uint16_t year, uint8_t month, uint8_t day);
-
 uint8_t isLeapYear(uint16_t year);
 
 //expecting no mcu library use this function, because it is per default unknown in a mcu environment without rtc
-//calculate this value with systemTime and CLOCKS_PER_SECOND or F_CPU in mcuClock if necessary to keep this implementation
-//as close as possible to the ansi/iso 9899-1990
+//calculate this value with systemTime and CLOCKS_PER_SECOND or F_CPU in mcuClock if necessary and subtract the sleep times
+// to keep this implementation as close as possible to the ansi/iso 9899-1990. After implementation connect it to the version in time.h
 clock_t s_clock(void) {
     return (clock_t) -1;
 }
 
 //time1 - time0
 int32_t s_difftime(uint32_t time1, uint32_t time0) {
+
+    // 0 - uint32_t_max exceeds max negative values of int32_T, avoid the operation
     int64_t diff = (int64_t) time1 - (int64_t) time0;
-
-
-    if (diff > INT32_MAX || diff < INT32_MIN) {
-        return INT32_MIN;
-    }
-    return (int32_t) diff;
+    //return INT32_MIN if we exceed its boundary
+    return (diff < INT32_MIN) ? INT32_MIN : (int32_t) diff;
 }
 
 // Converts the given year, month, day, hour, minute, and second into seconds since the epoch
@@ -40,17 +33,17 @@ uint32_t s_mktime(const struct tm *timeptr) {
 
     // Calculate number of days since the epoch
     uint16_t days_since_epoch = (time.tm_year - EPOCH_YEAR) * 365;
-    // add one day for leap years
 
+    // add one day for leap years
     for (uint16_t y = EPOCH_YEAR; y < time.tm_year; y++) {
         if (isLeapYear(y))
             days_since_epoch++;
     }
 
-    for (uint8_t m = 1; m < time.tm_mon; m++)
+    for (uint8_t m = 1; m < time.tm_mon; m++) {
         days_since_epoch += daysInMonth(time.tm_year, m);
+    }
 
-    // Calculate seconds since the epoch
     uint32_t seconds_since_epoch = days_since_epoch * ONE_DAY;
     seconds_since_epoch += (time.tm_mday - 1) * ONE_DAY;
     seconds_since_epoch += time.tm_hour * ONE_HOUR;
@@ -73,7 +66,7 @@ char *s_ctime(const uint32_t *timer) {
 }
 
 char *s_asctime(const struct tm *timeptr) {
-    char *result; // Allocate memory for the result
+    char *result;
 
     switch (timeptr->tm_isdst) {
         case 1: {
@@ -107,7 +100,6 @@ char *s_asctime(const struct tm *timeptr) {
             break;
         }
     }
-
     return result;
 }
 
@@ -146,10 +138,10 @@ struct tm *s_gmtime(const uint32_t *timer) {
 struct tm *s_localtime(const uint32_t *timer) {
     uint32_t timeValue = (*timer);
     uint8_t UTC_offset = calcUTCOffset((*timer));
-
-    // Convert epoch time to local time in Berlin
-    timeValue += UTC_offset * ONE_HOUR; // Adjust for UTC offset
+    // Adjust for UTC offset
+    timeValue += UTC_offset * ONE_HOUR;
     struct tm *timeToReturn = s_gmtime(&timeValue);
+
     timeToReturn->tm_isdst = UTC_offset;
     return timeToReturn;
 }
@@ -162,7 +154,6 @@ size_t s_strftime(char *s, size_t maxsize, const char *format, const struct tm *
 uint32_t s_difftime_unsigned(uint32_t time1, uint32_t time0) {
 
     int64_t diff = (int64_t) time1 - (int64_t) time0;
-
     return (uint32_t) (diff >= 0 ? diff : -diff);
 }
 
@@ -177,17 +168,15 @@ uint8_t daysInMonth(uint16_t year, uint8_t month) {
 
 uint8_t calcZellerCongruence(uint16_t year, uint8_t month, uint8_t day) {
     uint32_t h;
-    if(month == 1)
-    {
+    if (month == 1) {
         month = 13;
         year--;
     }
-    if (month == 2)
-    {
+    if (month == 2) {
         month = 14;
         year--;
     }
-    h = day + 13*(month+1)/5 + (year % 100) + (year % 100)/4 + (year / 100)/4 + 5*(year / 100);
+    h = day + 13 * (month + 1) / 5 + (year % 100) + (year % 100) / 4 + (year / 100) / 4 + 5 * (year / 100);
     h = h % 7;
     return h;
 }
@@ -200,15 +189,15 @@ uint8_t isDST(uint16_t year, uint8_t month, uint8_t day) {
     }
 
     // Check if month is March through October
-    if (month < 3 || month > 10)
+    if (month < 3 || month > 10) {
         return 0;
+    }
 
     // Calculate the day of the week for the last day of the month
     uint8_t lastDayOfMonth = calcZellerCongruence(year, month, 31);
 
     // Determine the date of the last Sunday of the month
-    uint8_t lastSunday = 31 - ((lastDayOfMonth-1)%7);
-
+    uint8_t lastSunday = 31 - ((lastDayOfMonth - 1) % 7);
 
     if (day >= lastSunday && month == 3 || day < lastSunday && month == 10) {
         return 1;
@@ -218,9 +207,8 @@ uint8_t isDST(uint16_t year, uint8_t month, uint8_t day) {
 
 uint16_t calcYear(uint32_t *days) {
     uint16_t year = EPOCH_YEAR;
-    while ((*days) >= 365 + ((year % 4 == 0 && year % 100 != 0) || (year % 400 == 0))) {
-        if ((year % 4 == 0 && year % 100 != 0) || (year % 400 == 0)) {
-
+    while ((*days) >= 365 + isLeapYear(year)) {
+        if (isLeapYear(year)) {
             (*days) -= 366;
             year++;
         } else {
@@ -242,13 +230,12 @@ uint8_t calcMonth(uint32_t *days, uint16_t year) {
 
 uint8_t calcUTCOffset(uint32_t epochTimeY2K) {
     uint32_t days = epochTimeY2K /= ONE_DAY;
-
     // Convert days since epoch to year, month, day
     uint16_t year = calcYear(&days);
     // Find the month and day
     uint8_t month = calcMonth(&days, year);
-    uint8_t day = days + 1; // Days start from 0, so add 1
-
+    // Days start from 0, so add 1
+    uint8_t day = days + 1;
     // Get the UTC offset based on whether daylight saving time (DST) is in effect
     return isDST(year, month, day) ? 2 : 1;
 }

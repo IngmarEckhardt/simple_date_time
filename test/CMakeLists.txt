@@ -8,29 +8,28 @@ set(SRC_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../src")
 
 add_subdirectory(${EXTERN_DIR} extern_build)
 
-
 set(SIMPLETIME_HEADER_FILES
-        ${SRC_DIR}/simpleTime/mcu_time.h
+        ${SRC_DIR}/simple-time/mcu_time.h
 )
 
 set(SIMPLETIME_SOURCE_FILES
-        ${SRC_DIR}/simpleTime/mcu_time.c
+        ${SRC_DIR}/simple-time/mcu_time.c
 )
 add_library(simple_time_only_lib STATIC ${SIMPLETIME_SOURCE_FILES} ${SIMPLETIME_HEADER_FILES})
 
 target_include_directories(simple_time_only_lib PUBLIC
-        ${SRC_DIR}/simpleTime/
+        ${SRC_DIR}/simple-time/
 )
 
-add_executable(time_c_test
+add_executable(mcu_t_test
         mcu_time_test.c
         mcu_time_test.h
 )
 
-target_link_libraries(time_c_test
+target_link_libraries(mcu_t_test
         simple_time_only_lib
         Unity
 )
 
 include(CTest)
-add_test(suite_1 time_c_test)
+add_test(suite_1 mcu_t_test)

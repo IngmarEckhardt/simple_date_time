@@ -1,5 +1,5 @@
-#ifndef SIMPLETIME_H
-#define SIMPLETIME_H
+#ifndef MCU_TIME_H
+#define MCU_TIME_H
 
 #include <inttypes.h>
 #include <stdlib.h>
@@ -31,4 +31,4 @@ struct tm       *s_localtime(const uint32_t * timer);
 size_t          s_strftime(char *s, size_t maxsize, const char *format, const struct tm *timeptr);
 
 uint32_t        s_difftime_unsigned(uint32_t time1, uint32_t time0);
-#endif //SIMPLETIME_H
+#endif //MCU_TIME_H
