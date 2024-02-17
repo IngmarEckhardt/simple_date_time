@@ -22,11 +22,11 @@ int main(void) {
     RUN_TEST(calcUtcOffset_ForFebruaryAndJuly_shouldReturnBothValuesCorrectly);
     RUN_TEST(calcMonth_59daysLeapYear_returnFebruary);
     RUN_TEST(calcMonth_59daysNonLeapYear_returnMarch);
-    RUN_TEST(getUTCOffset_julyThirtieth2021_return2);
-    RUN_TEST(getUTCOffset_octoberTwentySeventh2024_return1);
-    RUN_TEST(getUTCOffset_octoberTwentySixth2024_return2);
-    RUN_TEST(getUTCOffset_marchThirtyFirst2024_return2);
-    RUN_TEST(getUTCOffset_marchThirtieth2024_return1);
+    RUN_TEST(isDST_julyThirtieth2021_returnTrue);
+    RUN_TEST(isDST_octoberTwentySeventh2024_returnFalse);
+    RUN_TEST(isDST_octoberTwentySixth2024_returnTrue);
+    RUN_TEST(isDST_marchThirtyFirst2024_returnTrue);
+    RUN_TEST(isDST_marchThirtieth2024_returnFalse);
     RUN_TEST(calcZellerCongruence_marchThirtieth2024_returnZeroForSaturday);
     RUN_TEST(calcZellerCongruence_marchThirtyFirst2024_returnOneForSunday);
     RUN_TEST(calcZellerCongruence_octoberThirtyFirst2024_return5ForThursday);
@@ -70,7 +70,7 @@ void asctime_UtcCetCestTimestamps_createThreeStringsWithCorrectTimezones(void) {
 void localtime_februaryThirteenthCET_returnCorrectWintertimeStruct(void) {
 
     result = s_localtime(&februaryThirteenth2021Time_T);
-
+    //add one hour because of CET
     TEST_ASSERT_NOT_NULL(result);
     TEST_ASSERT_EQUAL_INT(0, result->tm_sec);
     TEST_ASSERT_EQUAL_INT(0, result->tm_min);
@@ -91,7 +91,6 @@ void localtime_julyThirteenthCEST_returnCorrectSummertimeStruct(void) {
     TEST_ASSERT_EQUAL_INT(7, result->tm_mon);
     TEST_ASSERT_EQUAL_INT(2021, result->tm_year);
 }
-
 
 //helper functions
 
@@ -114,46 +113,38 @@ void calcUtcOffset_ForFebruaryAndJuly_shouldReturnBothValuesCorrectly(void) {
     TEST_ASSERT_EQUAL_UINT8(2, resultOffset2);
 }
 
-void getUTCOffset_julyThirtieth2021_return2(void) {
-
-    uint8_t resultOffset2 = getUTCOffset(2021, 7,13);
-    TEST_ASSERT_EQUAL_UINT8(2, resultOffset2);
-}
-
-void getUTCOffset_octoberTwentySeventh2024_return1(void) {
-
-    uint8_t resultOffset2 = getUTCOffset(2024, 10,27);
+void isDST_julyThirtieth2021_returnTrue(void) {
+    uint8_t resultOffset2 = isDST(2021, 7,13);
     TEST_ASSERT_EQUAL_UINT8(1, resultOffset2);
 }
 
-void getUTCOffset_octoberTwentySixth2024_return2(void) {
-
-    uint8_t resultOffset2 = getUTCOffset(2024, 10,26);
-    TEST_ASSERT_EQUAL_UINT8(2, resultOffset2);
+void isDST_octoberTwentySeventh2024_returnFalse(void) {
+    uint8_t resultOffset2 = isDST(2024, 10,27);
+    TEST_ASSERT_EQUAL_UINT8(0, resultOffset2);
 }
-void getUTCOffset_marchThirtyFirst2024_return2(void) {
 
-    uint8_t resultOffset2 = getUTCOffset(2024, 3,31);
-    TEST_ASSERT_EQUAL_UINT8(2, resultOffset2);
-}
-void getUTCOffset_marchThirtieth2024_return1(void) {
-
-    uint8_t resultOffset2 = getUTCOffset(2024, 3,30);
+void isDST_octoberTwentySixth2024_returnTrue(void) {
+    uint8_t resultOffset2 = isDST(2024, 10,26);
     TEST_ASSERT_EQUAL_UINT8(1, resultOffset2);
+}
+void isDST_marchThirtyFirst2024_returnTrue(void) {
+    uint8_t resultOffset2 = isDST(2024, 3,31);
+    TEST_ASSERT_EQUAL_UINT8(1, resultOffset2);
+}
+void isDST_marchThirtieth2024_returnFalse(void) {
+    uint8_t resultOffset2 = isDST(2024, 3,30);
+    TEST_ASSERT_EQUAL_UINT8(0, resultOffset2);
 }
 void calcZellerCongruence_marchThirtieth2024_returnZeroForSaturday(void) {
-
     uint8_t resultOffset2 = calcZellerCongruence(2024, 3,30);
     TEST_ASSERT_EQUAL_UINT8(0, resultOffset2);
 }
 void calcZellerCongruence_marchThirtyFirst2024_returnOneForSunday(void) {
-
     uint8_t resultOffset2 = calcZellerCongruence(2024, 3,31);
     TEST_ASSERT_EQUAL_UINT8(1, resultOffset2);
 }
 
 void calcZellerCongruence_octoberThirtyFirst2024_return5ForThursday(void) {
-
     uint8_t resultOffset2 = calcZellerCongruence(2024, 10,31);
     TEST_ASSERT_EQUAL_UINT8(5, resultOffset2);
 }

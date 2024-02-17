@@ -14,6 +14,8 @@ uint8_t isDST(uint16_t year, uint8_t month, uint8_t day);
 
 uint8_t calcZellerCongruence(uint16_t year, uint8_t month, uint8_t day);
 
+uint8_t isLeapYear(uint16_t year);
+
 //expecting no mcu library use this function, because it is per default unknown in a mcu environment without rtc
 //calculate this value with systemTime and CLOCKS_PER_SECOND or F_CPU in mcuClock if necessary to keep this implementation
 //as close as possible to the ansi/iso 9899-1990
@@ -35,12 +37,16 @@ int32_t s_difftime(uint32_t time1, uint32_t time0) {
 // Converts the given year, month, day, hour, minute, and second into seconds since the epoch
 uint32_t s_mktime(const struct tm *timeptr) {
     const struct tm time = (*timeptr);
+
     // Calculate number of days since the epoch
     uint16_t days_since_epoch = (time.tm_year - EPOCH_YEAR) * 365;
+    // add one day for leap years
+
     for (uint16_t y = EPOCH_YEAR; y < time.tm_year; y++) {
-        if ((y % 4 == 0 && y % 100 != 0) || (y % 400 == 0))
-            days_since_epoch++; // Leap year
+        if (isLeapYear(y))
+            days_since_epoch++;
     }
+
     for (uint8_t m = 1; m < time.tm_mon; m++)
         days_since_epoch += daysInMonth(time.tm_year, m);
 
@@ -52,6 +58,10 @@ uint32_t s_mktime(const struct tm *timeptr) {
     seconds_since_epoch += time.tm_sec;
 
     return seconds_since_epoch;
+}
+
+uint8_t isLeapYear(uint16_t year) {
+    return (year % 4 == 0 && year % 100 != 0) || (year % 400 == 0);
 }
 
 uint32_t s_time(const uint32_t *timer) {
@@ -160,8 +170,8 @@ uint32_t s_difftime_unsigned(uint32_t time1, uint32_t time0) {
 uint8_t daysInMonth(uint16_t year, uint8_t month) {
     static const uint8_t days[] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
     uint8_t days_in_month = days[month - 1];
-    if (month == 2 && ((year % 4 == 0 && year % 100 != 0) || (year % 400 == 0)))
-        days_in_month++; // Leap year
+    if (month == 2 && isLeapYear(year))
+        days_in_month++;
     return days_in_month;
 }
 
@@ -206,11 +216,6 @@ uint8_t isDST(uint16_t year, uint8_t month, uint8_t day) {
     return 0;
 }
 
-// Function to get the UTC offset based on whether daylight saving time (DST) is in effect
-uint8_t getUTCOffset(uint16_t year, uint8_t month, uint8_t day) {
-    return isDST(year, month, day) ? 2 : 1; // DST in effect, UTC+2 (CEST)  Standard time, UTC+1 (CET)
-}
-
 uint16_t calcYear(uint32_t *days) {
     uint16_t year = EPOCH_YEAR;
     while ((*days) >= 365 + ((year % 4 == 0 && year % 100 != 0) || (year % 400 == 0))) {
@@ -245,5 +250,5 @@ uint8_t calcUTCOffset(uint32_t epochTimeY2K) {
     uint8_t day = days + 1; // Days start from 0, so add 1
 
     // Get the UTC offset based on whether daylight saving time (DST) is in effect
-    return getUTCOffset(year, month, day);
+    return isDST(year, month, day) ? 2 : 1;
 }
