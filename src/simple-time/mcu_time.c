@@ -12,9 +12,9 @@ uint8_t calcZellerCongruence(uint16_t year, uint8_t month, uint8_t day);
 uint8_t isLeapYear(uint16_t year);
 
 //expecting no mcu library use this function, because it is per default unknown in a mcu environment without rtc
-//calculate this value with systemTime and CLOCKS_PER_SECOND or F_CPU in mcuClock if necessary and subtract the sleep times
+//calculate this value with systemClock and CLOCKS_PER_SECOND or F_CPU in mcuClock if necessary and subtract the sleep times
 // to keep this implementation as close as possible to the ansi/iso 9899-1990. After implementation connect it to the version in time.h
-clock_t s_clock(void) {
+uint32_t s_clock(void) {
     return (clock_t) -1;
 }
 

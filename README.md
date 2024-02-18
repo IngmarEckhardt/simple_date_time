@@ -8,27 +8,27 @@ The `time.h` header file defines various functions and structures for working wi
 
 The `mcu_clock.h` header file provides declarations for functions that manage a volatile `uint32_t` system time using atomic read and write operations. It is designed to be used in conjunction with time management.
 
-## Functions and Structures
+## Functions
 
-In `time.h`
+In `time.h`/`mcu_time.h`
 
-- `clock()`: is a iso fulfilling stub, it should return the processor time used since start of system, if you implement this it need a logic that take sleep times into account
+- `clock()`:  This function is an ISO-compliant stub. It should return the processor time used since the start of the system. If you implement this, it needs logic that takes sleep times into account.
 - `difftime()`: Computes the difference between two calendar times.
 - `mktime()`: Converts a `struct tm` object in UTC to calendar time.
-- `time()`: returns the value read from a pointer.
+- `time()`: Returns the value read from a pointer.
 - `asctime()`: Converts every `struct tm` object to a string representation.
 - `ctime()`: Converts a calendar time to a string representation in CET/CEST.
 - `gmtime()`: Converts a calendar time value to a UTC-based `struct tm` object.
 - `localtime()`: Converts a calendar time value to a CET/CEST `struct tm` object.
-- `strftime()`: is a stub that return zero to fulfill ansi/iso 9899-1990
+- `strftime()`: This is a stub that returns zero to fulfill ANSI/ISO 9899-1990 requirements.
 
-String representations of time are in the format: yyyy-mm-dd hh:mm:ss and appended (CET) or (CEST) if it's not a UTC time.
+String representations of time are in the format: `yyyy-mm-dd hh:mm:ss` and appended with `(CET)` or `(CEST)` if it's not a UTC time.
 
-In `mcu_clock.h` every operation is protected with storing interrupt status, disabling all Interrupts, doing the operation and restoring the interrupt status afterward.
+In `mcu_clock.h`, every operation is protected by storing interrupt status, disabling all interrupts, performing the operation, and restoring the interrupt status afterward.
 
-- `set_system_time`: Initialize a systemTime Clock uint32 value
-- `getSystemTime`: read the systemTime
-- `tickSecond`:  increase the systemTime with 1 second. Call this for example in a interrupt-routine that is called from a counter overflow counting a clock quartz.
+- `setSystemClock()`: Initializes a `systemClock` clock `uint32` value.
+- `getSystemClock()`: Reads the `systemClock`.
+- `tickSecond()`:   Increases the `systemClock` by 1 second. Call this, for example, in an interrupt routine that is invoked from a counter overflow counting a clock quartz.
 
 ## Structures
 
@@ -36,19 +36,18 @@ In `mcu_clock.h` every operation is protected with storing interrupt status, dis
 
 ## Folder Structure
 
-To avoid problems with cross-platform compilation the code is separated into time.h/.c, which are highly platform-dependent and will cause compile problems in every toolchain where time_t is already declared and mcu_time.h/.c, which is platform-independent and the unit tests will compile with every toolchain.
+To avoid problems with cross-platform compilation, the code is separated into `time.h`/`.c`, which are highly platform-dependent and may cause compilation problems in every toolchain where `time_t` is already declared, and `mcu_time.h`/`.c`, which is platform-independent. The unit tests will compile with every toolchain.
 
 ## Usage
 
-To use this library in your C program, link the library into your build chain, and include the `time.h` header file. The library will also work in a cpp environment, but keep in mind Atmel warns against using Cpp in the toolchain description..
+To use this library in your C program, link the library into your build chain and include the time.h header file. The library will also work in a C++ environment, but keep in mind that Atmel warns against using C++ in the toolchain description.
 
 ```c
 #include "time.h"
-
 ```
 ## Compatibility
 
-Time.h/.c works only on C compilers where time_t is not defined, like the avr-gcc, mcu_clock.h/.c only on compiler with avr-toolchain. Mcu_time.h/.c and the tests should work on most C compilers that adhere to the C standard.
+`time.h`/`.c` works only on C compilers where `time_t` is not defined, like `avr-gcc`. `mcu_clock.h`/`.c` works only on compilers with `avr-toolchain`. `mcu_time.h`/`.c` and the tests should work on most C compilers that adhere to the C standard.
 
 ## Contributing
 
@@ -56,6 +55,6 @@ Contributions to improve or expand this library are welcome! If you find any iss
 
 ## License
 
-This library is licensed under the MIT License. See the LICENSE file for details.
+This library is licensed under the MIT License. See the `LICENSE` file for details.
 
-This README.md file provides an overview of the `time.h` header file, including descriptions of its functions, structures, macros, usage instructions, compatibility information, contribution guidelines, and licensing information.
+This `README.md` file provides an overview of the `time.h` header file, including descriptions of its functions, structures, macros, usage instructions, compatibility information, contribution guidelines, and licensing information.

@@ -12,7 +12,7 @@
 #define CET_STRING_SIZE 25
 #define CEST_STRING_SIZE 26
 
-clock_t         s_clock(void);
+uint32_t        s_clock(void);
 //time1 - time0, returns int32_t_MIN if calculation exceeds boundaries of int32_t
 int32_t         s_difftime(uint32_t time1, uint32_t time0);
 
