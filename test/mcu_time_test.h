@@ -46,6 +46,6 @@ const uint32_t      februaryThirteenth2021Time_T = 666489600;
 const uint32_t      julyThirtieth2021Time_T = 679449600;
 
 //reference with purpose to free the allocated memory in the tearDown function
-struct tm           *result;
-char                *resultString;
+struct tm*           result;
+char*                resultString;
 #endif //SIMPLE_TIME_LIBRARY_TEST_MCU_TIME_TEST_H
