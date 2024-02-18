@@ -42,9 +42,9 @@ struct tm {
     uint8_t  tm_min;    /**< Minutes [0,59] */
     uint8_t  tm_hour;   /**< Hours [0,23] */
     uint8_t  tm_mday;   /**< Day of the month [1,31] */
-    uint8_t  tm_wday;   /**< Day of the week [0,6] (Sunday = 0) not used */
     uint8_t  tm_mon;    /**< Month [1,12] */
     uint16_t tm_year;   /**< Year */
+    uint8_t  tm_wday;   /**< Day of the week [0,6] (Sunday = 0) not used */
     uint16_t tm_yday;   /**< Day of the year [0,365] not used */
     uint8_t  tm_isdst;  /**< Daylight Saving Time flag, used as:
                              - 0 for UTC
