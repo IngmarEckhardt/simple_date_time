@@ -13,7 +13,7 @@ uint8_t             calcZellerCongruence(uint16_t year, uint8_t month, uint8_t d
 #include "mcu_time.c"
 
 //test helper
-void                test_asctime_with_timestamp(const struct tm *timestamp, const char *expected_format, size_t expected_length);
+void                test_asctime_with_timestamp(const struct time *timestamp, const char *expected_format, size_t expected_length);
 
 //functions under Test
 void                mktime_epochStartDateUTC_returnZero(void);
@@ -39,13 +39,13 @@ void                calcZellerCongruence_marchThirtyFirst2024_returnOneForSunday
 void                calcZellerCongruence_octoberThirtyFirst2024_return5ForThursday(void);
 
 //given
-const struct tm     epochStartDate = {0, 0, 0, 1, 1, EPOCH_YEAR};
-const struct tm     februaryThirteenth2021 = {0, 0, 0, 13, 2, 2021, 0, 0, 1};
-const struct tm     julyThirteenth2021 = {0, 0, 0, 13, 7, 2021, 0, 0, 2};
+const struct time     epochStartDate = {0, 0, 0, 1, 1, EPOCH_YEAR};
+const struct time     februaryThirteenth2021 = {0, 0, 0, 13, 2, 2021, 0, 0, 1};
+const struct time     julyThirteenth2021 = {0, 0, 0, 13, 7, 2021, 0, 0, 2};
 const uint32_t      februaryThirteenth2021Time_T = 666489600;
 const uint32_t      julyThirtieth2021Time_T = 679449600;
 
 //reference with purpose to free the allocated memory in the tearDown function
-struct tm*           result;
-char*                resultString;
+struct time         *result;
+char                *resultString;
 #endif //SIMPLE_TIME_LIBRARY_TEST_MCU_TIME_TEST_H

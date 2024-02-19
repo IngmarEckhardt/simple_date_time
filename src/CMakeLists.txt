@@ -33,15 +33,13 @@ set(CUSTOM_COMPILE_OPTIONS
 add_compile_options(${CUSTOM_COMPILE_OPTIONS})
 
 set(HEADER_FILES
-        time.h
-        simple-time/mcu_clock.h
-        simple-time/mcu_time.h
+        mcu_clock.h
+        mcu_time.h
         )
 
 set(SOURCE_FILES
-        time.c
-        simple-time/mcu_clock.c
-        simple-time/mcu_time.c
+        mcu_clock.c
+        mcu_time.c
         )
 
 add_library(time_lib STATIC ${SOURCE_FILES} ${HEADER_FILES})

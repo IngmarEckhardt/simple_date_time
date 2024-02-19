@@ -4,17 +4,17 @@ project("Simple Time Library Test" C)
 # Unity
 set(EXTERN_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../extern")
 
-set(SRC_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../src")
+set(SRC_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../src/")
 
 add_subdirectory(${EXTERN_DIR} extern_build)
 
 set(SIMPLETIME_SOURCE_FILES
-        ${SRC_DIR}/simple-time/mcu_time.c
+        ${SRC_DIR}mcu_time.c
 )
 add_library(simple_time_only_lib STATIC ${SIMPLETIME_SOURCE_FILES})
 
 target_include_directories(simple_time_only_lib PUBLIC
-       ${SRC_DIR}/simple-time/
+       ${SRC_DIR}
 )
 
 add_executable(mcu_t_test

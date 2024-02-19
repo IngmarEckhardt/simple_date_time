@@ -162,7 +162,7 @@ void calcMonth_59daysNonLeapYear_returnMarch(void) {
 }
 
 // Helper function to test asctime with a given timestamp
-void test_asctime_with_timestamp(const struct tm *timestamp, const char *expected_format, size_t expected_length) {
+void test_asctime_with_timestamp(const struct time *timestamp, const char *expected_format, size_t expected_length) {
     resultString = s_asctime(timestamp);
     TEST_ASSERT_NOT_NULL(resultString);
 

@@ -2,6 +2,7 @@
 #include "mcu_time.h"
 #include <stdint.h>
 
+
 //helper functions
 uint16_t calcYear(uint32_t *days);
 uint8_t daysInMonth(uint16_t year, uint8_t month);
@@ -15,7 +16,7 @@ uint8_t isLeapYear(uint16_t year);
 //calculate this value with systemClock and CLOCKS_PER_SECOND or F_CPU in mcuClock if necessary and subtract the sleep times
 // to keep this implementation as close as possible to the ansi/iso 9899-1990. After implementation connect it to the version in time.h
 uint32_t s_clock(void) {
-    return (clock_t) -1;
+    return -1;
 }
 
 //time1 - time0
@@ -28,8 +29,8 @@ int32_t s_difftime(uint32_t time1, uint32_t time0) {
 }
 
 // Converts the given year, month, day, hour, minute, and second into seconds since the epoch
-uint32_t s_mktime(const struct tm *timeptr) {
-    const struct tm time = (*timeptr);
+uint32_t s_mktime(const struct time *timeptr) {
+    const struct time time = (*timeptr);
 
     // Calculate number of days since the epoch
     uint16_t days_since_epoch = (time.tm_year - EPOCH_YEAR) * 365;
@@ -65,7 +66,7 @@ char *s_ctime(const uint32_t *timer) {
     return s_asctime(s_localtime(timer));
 }
 
-char *s_asctime(const struct tm *timeptr) {
+char *s_asctime(const struct time *timeptr) {
     char *result;
 
     switch (timeptr->tm_isdst) {
@@ -103,9 +104,9 @@ char *s_asctime(const struct tm *timeptr) {
     return result;
 }
 
-struct tm *s_gmtime(const uint32_t *timer) {
+struct time *s_gmtime(const uint32_t *timer) {
     // Allocate memory for a struct tm structure
-    struct tm *constructedTime = (struct tm *) malloc(sizeof(struct tm));
+    struct time *constructedTime = (struct time *) malloc(sizeof(struct time));
     if (constructedTime == NULL) {
         return NULL;
     }
@@ -126,18 +127,18 @@ struct tm *s_gmtime(const uint32_t *timer) {
     return constructedTime;
 }
 
-struct tm *s_localtime(const uint32_t *timer) {
+struct time *s_localtime(const uint32_t *timer) {
     uint32_t timeValue = (*timer);
     uint8_t UTC_offset = calcUTCOffset((*timer));
     // Adjust for UTC offset
     timeValue += UTC_offset * ONE_HOUR;
-    struct tm *timeToReturn = s_gmtime(&timeValue);
+    struct time *timeToReturn = s_gmtime(&timeValue);
 
     timeToReturn->tm_isdst = UTC_offset;
     return timeToReturn;
 }
 
-size_t s_strftime(char *s, size_t maxsize, const char *format, const struct tm *timeptr) {
+size_t s_strftime(char *s, size_t maxsize, const char *format, const struct time *timeptr) {
     return 0; // Always return 0 as per your requirement
 }
 
