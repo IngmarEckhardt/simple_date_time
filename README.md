@@ -29,7 +29,7 @@ String representations of time are in the format: `yyyy-mm-dd hh:mm:ss` and appe
 
 ## Usage
 
-To use this library in your C program, link the library into your build chain and include the time.h header file. The library will also work in a C++ environment, but keep in mind that Atmel warns against using C++ in the toolchain description.
+To use this library in your C program, link the library into your build chain and include the time.h header file. The library will also work in a C++ environment, but keep in mind that Atmel warns against using C++ in the toolchain description. Example of usage: Please check out my `dwarfOS` repository.
 
 ```c
 #include "time.h"
