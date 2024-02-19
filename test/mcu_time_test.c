@@ -69,7 +69,7 @@ void asctime_UtcCetCestTimestamps_createThreeStringsWithCorrectTimezones(void) {
 
 void localtime_februaryThirteenthCET_returnCorrectWintertimeStruct(void) {
 
-    result = s_localtime(&februaryThirteenth2021Time_T);
+    result = localtime(&februaryThirteenth2021Time_T);
     //add one hour because of CET
     TEST_ASSERT_NOT_NULL(result);
     TEST_ASSERT_EQUAL_INT(0, result->tm_sec);
@@ -81,7 +81,7 @@ void localtime_februaryThirteenthCET_returnCorrectWintertimeStruct(void) {
 }
 void localtime_julyThirteenthCEST_returnCorrectSummertimeStruct(void) {
 
-    result = s_localtime(&julyThirtieth2021Time_T);
+    result = localtime(&julyThirtieth2021Time_T);
     //add two hours because of CEST
     TEST_ASSERT_NOT_NULL(result);
     TEST_ASSERT_EQUAL_INT(0, result->tm_sec);
@@ -162,8 +162,8 @@ void calcMonth_59daysNonLeapYear_returnMarch(void) {
 }
 
 // Helper function to test asctime with a given timestamp
-void test_asctime_with_timestamp(const struct time *timestamp, const char *expected_format, size_t expected_length) {
-    resultString = s_asctime(timestamp);
+void test_asctime_with_timestamp(const struct tm *timestamp, const char *expected_format, size_t expected_length) {
+    resultString = asctime(timestamp);
     TEST_ASSERT_NOT_NULL(resultString);
 
     char expected_result[expected_length];

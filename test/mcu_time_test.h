@@ -1,7 +1,7 @@
 #ifndef SIMPLE_TIME_LIBRARY_TEST_MCU_TIME_TEST_H
 #define SIMPLE_TIME_LIBRARY_TEST_MCU_TIME_TEST_H
 #include <unity.h>
-#include <mcu_time.h>
+#include <time.h>
 
 //declaration for the helper functions that aren't present in the header
 uint16_t            calcYear(uint32_t *days);
@@ -10,10 +10,10 @@ uint8_t             calcUTCOffset(uint32_t epochTimeY2K);
 uint8_t             calcMonth(uint32_t *days, uint16_t year);
 uint8_t             isDST(uint16_t year, uint8_t month, uint8_t day);
 uint8_t             calcZellerCongruence(uint16_t year, uint8_t month, uint8_t day);
-#include "mcu_time.c"
+#include "time.c"
 
 //test helper
-void                test_asctime_with_timestamp(const struct time *timestamp, const char *expected_format, size_t expected_length);
+void                test_asctime_with_timestamp(const struct tm *timestamp, const char *expected_format, size_t expected_length);
 
 //functions under Test
 void                mktime_epochStartDateUTC_returnZero(void);
@@ -39,13 +39,13 @@ void                calcZellerCongruence_marchThirtyFirst2024_returnOneForSunday
 void                calcZellerCongruence_octoberThirtyFirst2024_return5ForThursday(void);
 
 //given
-const struct time     epochStartDate = {0, 0, 0, 1, 1, EPOCH_YEAR};
-const struct time     februaryThirteenth2021 = {0, 0, 0, 13, 2, 2021, 0, 0, 1};
-const struct time     julyThirteenth2021 = {0, 0, 0, 13, 7, 2021, 0, 0, 2};
+const struct tm     epochStartDate = {0, 0, 0, 1, 1, EPOCH_YEAR};
+const struct tm     februaryThirteenth2021 = {0, 0, 0, 13, 2, 2021, 0, 0, 1};
+const struct tm     julyThirteenth2021 = {0, 0, 0, 13, 7, 2021, 0, 0, 2};
 const uint32_t      februaryThirteenth2021Time_T = 666489600;
 const uint32_t      julyThirtieth2021Time_T = 679449600;
 
 //reference with purpose to free the allocated memory in the tearDown function
-struct time         *result;
+struct tm         *result;
 char                *resultString;
 #endif //SIMPLE_TIME_LIBRARY_TEST_MCU_TIME_TEST_H

@@ -1,5 +1,5 @@
 simple_date_time.componentinfo.xml
 simple_date_time.cppproj
-/cmake*
+/cmake-*
 /src/cmake*
 /test/cmake*
