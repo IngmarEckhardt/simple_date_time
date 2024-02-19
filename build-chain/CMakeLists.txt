@@ -14,8 +14,8 @@ add_definitions(-DTIME_H)
 set(CMAKE_C_COMPILER_TARGET "C:/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/ATmega_DFP/1.7.374/gcc/dev/atmega328p")
 
 # directories
-set(EXTERN_DIR "${CMAKE_CURRENT_SOURCE_DIR}/extern/")
-set(SRC_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src/")
+set(EXTERN_DIR "../extern/")
+set(SRC_DIR "../src/")
 
 # naming, versioning
 set(NAME "Simple-Date-Time")
@@ -83,7 +83,7 @@ target_include_directories(simple_time_test PUBLIC
 )
 
 add_executable(Test_Time
-        test/time_test.c
+        ../test/time_test.c
 )
 
 target_link_libraries(Test_Time
