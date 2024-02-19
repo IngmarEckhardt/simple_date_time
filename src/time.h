@@ -82,7 +82,7 @@ int32_t         difftime(time_t time1, time_t time0);
  * @param timeptr Pointer to the `struct tm` object representing the time in UTC.
  * @return The calendar time value.
  */
-time_t          mktime(struct tm * timeptr);
+time_t          mktime(const struct tm * timeptr);
 
 /**
  * @brief Returns the time as value read from a pointer.

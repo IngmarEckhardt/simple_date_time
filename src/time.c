@@ -21,7 +21,7 @@ uint8_t isLeapYear(uint16_t year);
 //expecting no mcu library use this function, because it is per default unknown in a mcu environment without rtc
 //calculate this value with systemClock and CLOCKS_PER_SECOND or F_CPU in mcuClock if necessary and subtract the sleep times
 // to keep this implementation as close as possible to the ansi/iso 9899-1990. After implementation connect it to the version in time.h
-uint32_t s_clock(void) {
+uint32_t clock(void) {
     return -1;
 }
 
@@ -35,7 +35,7 @@ int32_t difftime(uint32_t time1, uint32_t time0) {
 }
 
 // Converts the given year, month, day, hour, minute, and second into seconds since the epoch
-uint32_t s_mktime(const struct tm *timeptr) {
+uint32_t mktime(const struct tm *timeptr) {
     const struct tm time = (*timeptr);
 
     // Calculate number of days since the epoch

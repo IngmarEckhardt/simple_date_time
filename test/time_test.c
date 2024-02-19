@@ -37,20 +37,20 @@ int main(void) {
 
 void mktime_epochStartDateUTC_returnZero(void) {
 
-    uint32_t resultInt32 = s_mktime(&epochStartDate);
+    uint32_t resultInt32 = mktime(&epochStartDate);
     uint32_t expected_result = 0;
     TEST_ASSERT_EQUAL_UINT32(expected_result, resultInt32);
 }
 void mktime_februaryThirteenthCET_calculateCorrectly(void) {
 
-    uint32_t resultInt32 = s_mktime(&februaryThirteenth2021);
+    uint32_t resultInt32 = mktime(&februaryThirteenth2021);
     uint32_t expected_result = februaryThirteenth2021Time_T;
 
     TEST_ASSERT_EQUAL_UINT32(expected_result, resultInt32);
 }
 void mktime_julyThirteenthCEST_calculateCorrectly(void) {
 
-    uint32_t resultInt32 = s_mktime(&julyThirteenth2021);
+    uint32_t resultInt32 = mktime(&julyThirteenth2021);
     uint32_t expected_result = julyThirtieth2021Time_T;
 
     TEST_ASSERT_EQUAL_UINT32(expected_result, resultInt32);
