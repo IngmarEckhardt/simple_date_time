@@ -1,7 +1,7 @@
 #ifndef SIMPLE_TIME_LIBRARY_TEST_MCU_TIME_TEST_H
 #define SIMPLE_TIME_LIBRARY_TEST_MCU_TIME_TEST_H
 #include <unity.h>
-#include <mcu_time.h>
+#include <time.h>
 
 //declaration for the helper functions that aren't present in the header
 uint16_t            calcYear(uint32_t *days);
@@ -10,7 +10,7 @@ uint8_t             calcUTCOffset(uint32_t epochTimeY2K);
 uint8_t             calcMonth(uint32_t *days, uint16_t year);
 uint8_t             isDST(uint16_t year, uint8_t month, uint8_t day);
 uint8_t             calcZellerCongruence(uint16_t year, uint8_t month, uint8_t day);
-#include "mcu_time.c"
+#include "time.c"
 
 //test helper
 void                test_asctime_with_timestamp(const struct tm *timestamp, const char *expected_format, size_t expected_length);
@@ -46,6 +46,6 @@ const uint32_t      februaryThirteenth2021Time_T = 666489600;
 const uint32_t      julyThirtieth2021Time_T = 679449600;
 
 //reference with purpose to free the allocated memory in the tearDown function
-struct tm*           result;
-char*                resultString;
+struct tm         *result;
+char                *resultString;
 #endif //SIMPLE_TIME_LIBRARY_TEST_MCU_TIME_TEST_H

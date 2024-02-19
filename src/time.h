@@ -1,11 +1,18 @@
-#ifndef TIME_H
-#define TIME_H
+#ifndef SIMPLE_TIME_H
+#define SIMPLE_TIME_H
 
 #ifdef __cplusplus
 extern          "C" {
 #endif
 #include <inttypes.h>
 #include <stdlib.h>
+
+#define ONE_HOUR 3600
+#define ONE_DAY 86400
+#define EPOCH_YEAR 2000
+#define UTC_STRING_SIZE 20
+#define CET_STRING_SIZE 25
+#define CEST_STRING_SIZE 26
 
 
 /**
@@ -135,4 +142,4 @@ size_t          strftime(char *s, size_t maxsize, const char *format, const stru
 }
 #endif
 
-#endif              /* TIME_H  */
+#endif              /* SIMPLE_TIME_H  */
