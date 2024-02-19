@@ -5,11 +5,17 @@
 
 //helper functions
 uint16_t calcYear(uint32_t *days);
+
 uint8_t daysInMonth(uint16_t year, uint8_t month);
+
 uint8_t calcUTCOffset(uint32_t epochTimeY2K);
+
 uint8_t calcMonth(uint32_t *days, uint16_t year);
+
 uint8_t isDST(uint16_t year, uint8_t month, uint8_t day);
+
 uint8_t calcZellerCongruence(uint16_t year, uint8_t month, uint8_t day);
+
 uint8_t isLeapYear(uint16_t year);
 
 //expecting no mcu library use this function, because it is per default unknown in a mcu environment without rtc
@@ -20,7 +26,7 @@ uint32_t s_clock(void) {
 }
 
 //time1 - time0
-int32_t s_difftime(uint32_t time1, uint32_t time0) {
+int32_t difftime(uint32_t time1, uint32_t time0) {
 
     // 0 - uint32_t_max exceeds max negative values of int32_T, avoid the operation
     int64_t diff = (int64_t) time1 - (int64_t) time0;
@@ -118,7 +124,7 @@ struct tm *gmtime(const uint32_t *timer) {
     timeValue /= 60;
     constructedTime->tm_hour = timeValue % 24;
     timeValue /= 24;
-      // Convert days since epoch to year, month, day
+    // Convert days since epoch to year, month, day
     constructedTime->tm_year = calcYear(&timeValue);
     // Find the month and day
     constructedTime->tm_mon = calcMonth(&timeValue, constructedTime->tm_year);
@@ -143,7 +149,7 @@ size_t strftime(char *s, size_t maxsize, const char *format, const struct tm *ti
 }
 
 //time1 - time0
-uint32_t s_difftime_unsigned(uint32_t time1, uint32_t time0) {
+uint32_t difftime_unsigned(uint32_t time1, uint32_t time0) {
 
     int64_t diff = (int64_t) time1 - (int64_t) time0;
     return (uint32_t) (diff >= 0 ? diff : -diff);
@@ -155,7 +161,7 @@ uint8_t daysInMonth(uint16_t year, uint8_t month) {
     static const uint8_t days[] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
     uint8_t days_in_month = days[month - 1];
 
-    if (month == 2 && isLeapYear(year)) {days_in_month++;}
+    if (month == 2 && isLeapYear(year)) { days_in_month++; }
 
     return days_in_month;
 }

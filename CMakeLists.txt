@@ -10,6 +10,7 @@ set(TARGET_CPU ATmega328P)
 add_compile_definitions("__AVR_${TARGET_CPU}__")
 add_definitions(-D_TIME_T_DEFINED)
 add_definitions(-DTIME_H)
+
 set(CMAKE_C_COMPILER_TARGET "C:/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/ATmega_DFP/1.7.374/gcc/dev/atmega328p")
 
 # directories
@@ -18,7 +19,7 @@ set(SRC_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src/")
 
 # naming, versioning
 set(NAME "Simple-Date-Time")
-set(VERSION "0.3.0")
+set(VERSION "0.9.0")
 set(PROJECT ${NAME}_${VERSION})
 project(${PROJECT} C)
 
@@ -58,12 +59,10 @@ set(AVR_LINKER_FLAGS
 set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${AVR_LINKER_FLAGS}")
 
 set(HEADER_FILES
-        ${SRC_DIR}mcu_clock.h
         ${SRC_DIR}time.h
 )
 
 set(SOURCE_FILES
-        ${SRC_DIR}mcu_clock.c
         ${SRC_DIR}time.c
 )
 
@@ -75,15 +74,16 @@ target_include_directories(time_lib PUBLIC
 
 
 
-add_library(simple_time_test STATIC ${SRC_DIR}time.c)
+add_library(simple_time_test STATIC
+        ${SRC_DIR}time.c
+)
 
 target_include_directories(simple_time_test PUBLIC
        ${SRC_DIR}
 )
 
 add_executable(Test_Time
-        test/mcu_time_test.c
-        test/mcu_time_test.h
+        test/time_test.c
 )
 
 target_link_libraries(Test_Time

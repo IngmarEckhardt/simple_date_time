@@ -3,3 +3,4 @@ simple_date_time.cppproj
 /cmake-*
 /src/cmake*
 /test/cmake*
+/extern/unity/
